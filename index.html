@@ -88,7 +88,10 @@
 
         function parsePrice(str) {
             if (!str) return 0;
-            return parseFloat(str.replace('R$', '').replace(',', '.').trim()) || 0;
+            // Remove R$, virgula, espaços
+            let clean = str.toString().replace(/R\$/g, '').replace(/,/g, '.').trim();
+            let parsed = parseFloat(clean);
+            return isNaN(parsed) ? 0 : parsed;
         }
 
         async function loadData() {
@@ -96,6 +99,8 @@
                 showMsg('Carregando...', 'success');
                 const res = await fetch(APPS_SCRIPT_URL);
                 const text = await res.text();
+                console.log('Raw CSV:', text.substring(0, 300));
+                
                 const lines = text.split('\n');
                 
                 cardapio = [];
@@ -111,18 +116,20 @@
                     const preco = parsePrice(parts[2]);
                     const ativo = parts[3].trim();
                     
-                    if (produto && categoria && preco > 0 && (ativo === 'TRUE' || ativo === '✓' || ativo === 'true')) {
+                    console.log('Parseando:', produto, categoria, preco, ativo);
+                    
+                    if (produto && categoria && preco > 0 && (ativo === 'TRUE' || ativo === 'true' || ativo === 'true')) {
                         cardapio.push({ produto, categoria, preco });
                     }
                 }
                 
-                console.log('Cardápio carregado:', cardapio);
+                console.log('Cardápio final:', cardapio);
                 renderCategories();
                 renderProducts();
-                showMsg('✅ Sincronizado!', 'success');
+                showMsg('✅ Sincronizado! ' + cardapio.length + ' produtos carregados', 'success');
             } catch(e) {
                 console.error('Erro:', e);
-                showMsg('❌ Erro ao sincronizar: ' + e.message, 'error');
+                showMsg('❌ Erro: ' + e.message, 'error');
             }
         }
 
