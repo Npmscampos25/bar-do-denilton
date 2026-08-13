@@ -24,6 +24,14 @@
             box-shadow: 0 4px 15px rgba(212, 165, 116, 0.4);
         }
         
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
         .header-emoji { font-size: 48px; }
         
         .header h1 { 
@@ -143,6 +151,8 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.3);
         }
         
+        button:active { transform: translateY(-1px); }
+        
         .categories { 
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
@@ -160,17 +170,20 @@
             margin: 0;
             width: 100%;
             font-size: 14px;
+            transition: all 0.3s;
         }
         
         .categories button:hover { 
             border-style: solid;
             background: #f9f5f0;
+            transform: rotate(2deg);
         }
         
         .categories button.active { 
             background: #d4a574;
             color: white;
             border-style: solid;
+            transform: rotate(0deg) scale(1.05);
         }
         
         .products-grid { 
@@ -196,18 +209,22 @@
             gap: 8px;
             margin: 0;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
         }
         
         .product-btn:hover { 
             border-color: #8b6f47;
             background: #f9f5f0;
-            transform: translateY(-5px);
+            transform: translateY(-5px) rotate(-1deg);
+            box-shadow: 0 8px 15px rgba(212, 165, 116, 0.3);
         }
         
         .product-btn.active { 
             background: #d4a574;
             color: white;
             border-color: #8b6f47;
+            transform: rotate(0deg) scale(1.08);
+            box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
         }
         
         .product-name { font-size: 14px; font-weight: bold; }
@@ -226,6 +243,7 @@
             margin: 0;
             text-align: center;
             font-weight: bold;
+            font-size: 16px;
         }
         
         .qty-section button { flex: 1; margin: 0; }
@@ -238,16 +256,31 @@
             margin-top: 25px;
             display: none;
             box-shadow: 0 8px 20px rgba(212, 165, 116, 0.3);
+            position: relative;
+        }
+        
+        .order::before {
+            content: '🍽️';
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            font-size: 40px;
         }
         
         .order.show { 
             display: block;
-            animation: slideIn 0.4s ease-out;
+            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         
         @keyframes slideIn { 
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { 
+                opacity: 0;
+                transform: translateY(30px) rotateX(90deg);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
         }
         
         .order h3 { 
@@ -268,7 +301,9 @@
             margin-bottom: 8px;
         }
         
-        .order-item:last-child { border-bottom: none; }
+        .order-item:last-child { 
+            border-bottom: none;
+        }
         
         .order-total { 
             font-weight: 900;
@@ -289,12 +324,16 @@
             font-size: 18px !important;
         }
         
+        .btn-submit:hover { 
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%) !important;
+        }
+        
         .msg { 
             padding: 15px;
             margin: 15px 0;
             border-radius: 12px;
             display: none;
-            animation: popIn 0.4s ease-out;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             font-weight: bold;
             font-size: 15px;
         }
@@ -321,6 +360,8 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
         }
         
         .admin-table th, .caixa-table th, .resumo-table th { 
@@ -329,6 +370,7 @@
             font-weight: bold;
             padding: 12px;
             text-align: left;
+            font-size: 15px;
         }
         
         .admin-table td, .caixa-table td, .resumo-table td { 
@@ -338,10 +380,12 @@
         
         .admin-table input { width: 100%; margin: 0; }
         .admin-table tr:nth-child(even) { background: #f9f5f0; }
+        .admin-table tr:hover { background: #fff5ed; }
         
         .btn-add { 
             background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important;
             margin-top: 15px;
+            font-size: 16px;
         }
         
         .btn-remove { 
@@ -349,6 +393,7 @@
             width: 100%;
             margin: 0;
             padding: 8px;
+            font-size: 13px;
         }
         
         .search-section { 
@@ -364,6 +409,7 @@
             font-weight: bold;
             margin-bottom: 10px;
             color: #8b6f47;
+            font-size: 16px;
         }
         
         .info-box { 
@@ -372,11 +418,13 @@
             padding: 20px;
             margin: 20px 0;
             border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(212, 165, 116, 0.2);
         }
         
         .info-box h3 { 
             color: #8b6f47;
             margin-bottom: 12px;
+            font-size: 18px;
             font-weight: 900;
         }
         
@@ -408,11 +456,13 @@
             margin-bottom: 20px;
             border: 2px solid #d4a574;
         }
+        .senha-container button { margin-bottom: 10px; }
         .senha-error { 
             color: #ff6b6b;
             font-weight: bold;
             text-align: center;
             margin-top: 10px;
+            font-size: 14px;
         }
         
         label { color: #8b6f47; font-weight: bold; }
@@ -420,7 +470,9 @@
 </head>
 <body>
     <div class="header">
-        <div style="font-size: 48px; margin-bottom: 10px;">🍺</div>
+        <div class="header-logo">
+            <div class="header-emoji">🍺</div>
+        </div>
         <h1>🍺 BAR DO DENILTON 🍺</h1>
         <div class="header-buttons">
             <button class="header-btn active" onclick="switchTab('garcom')">🍽️ Garçom</button>
@@ -429,7 +481,7 @@
         </div>
     </div>
 
-    <div id="senhaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center;">
+    <div id="senhaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; flex-direction: column;">
         <div class="senha-container">
             <h2>🔐 Acesso Admin</h2>
             <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter') validarSenha()">
@@ -445,7 +497,7 @@
             <div id="msg" class="msg"></div>
             
             <div>
-                <label>👤 Quem tá pedindo?</label>
+                <label style="display: block; margin-bottom: 8px;">👤 Quem tá pedindo?</label>
                 <input type="text" id="clientName" placeholder="Nome do cliente">
             </div>
             
@@ -501,7 +553,7 @@
     <div id="admin" class="tab-content">
         <div class="section">
             <h2>⚙️ Mexer no Cardápio</h2>
-            <p style="margin: 10px 0; color: #666;">Adiciona, edita ou tira os produtos:</p>
+            <p style="margin: 10px 0; color: #666; font-size: 15px;">Adiciona, edita ou tira os produtos:</p>
             
             <table class="admin-table">
                 <thead>
@@ -521,72 +573,30 @@
 
     <script>
         const ADMIN_PASSWORD = 'admin123';
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwoNOrReTXhr-BAfyfMmQ2e3gFy4SbMsi2xOfzpWbj8mB9ztAfIaBBRTPc_KJxTbJUF5w/exec';
-        const CARDAPIO_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=1205665778&single=true&output=csv';
-        
         let adminUnlocked = false;
-        let cardapio = [];
+
+        let cardapio = [
+            { produto: 'Cerveja Brahma', categoria: 'Bebidas', preco: 9.00 },
+            { produto: 'Coca-Cola', categoria: 'Bebidas', preco: 6.00 },
+            { produto: 'X-Salada', categoria: 'Lanches', preco: 27.00 },
+            { produto: 'X-Bacon', categoria: 'Lanches', preco: 32.00 },
+            { produto: 'Porção Frita', categoria: 'Porções', preco: 45.00 },
+            { produto: 'Cerveja Heineken', categoria: 'Bebidas', preco: 12.00 },
+            { produto: 'Cerveja Itaipava', categoria: 'Bebidas', preco: 8.00 },
+            { produto: 'X-Tudo', categoria: 'Lanches', preco: 35.00 },
+            { produto: 'X-Frango', categoria: 'Lanches', preco: 25.00 },
+            { produto: 'X-Calabresa', categoria: 'Lanches', preco: 28.00 },
+            { produto: 'Hambúrguer Artesanal', categoria: 'Lanches', preco: 32.00 },
+            { produto: 'Cachorro-Quente', categoria: 'Lanches', preco: 18.00 },
+            { produto: 'Batata Frita P', categoria: 'Porções', preco: 15.00 },
+            { produto: 'Batata Frita G', categoria: 'Porções', preco: 25.00 },
+            { produto: 'Anéis de Cebola', categoria: 'Porções', preco: 22.00 }
+        ];
+        
         let comandas = [];
         let tempOrder = [];
         let selectedProduct = null;
         let selectedCategory = null;
-
-        // Carregar cardápio do Google Sheets
-        async function loadCardapio() {
-            try {
-                const response = await fetch(CARDAPIO_CSV_URL);
-                const text = await response.text();
-                const lines = text.split('\n');
-                cardapio = [];
-                
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (!line) continue;
-                    
-                    const parts = line.split(',');
-                    if (parts.length < 3) continue;
-                    
-                    const produto = parts[0].trim();
-                    const categoria = parts[1].trim();
-                    const preco = parseFloat(parts[2]) || 0;
-                    const ativo = parts[3] ? parts[3].trim() : 'SIM';
-                    
-                    if (produto && categoria && preco > 0 && (ativo === 'SIM' || ativo === 'TRUE')) {
-                        cardapio.push({ produto, categoria, preco });
-                    }
-                }
-                
-                renderCategories();
-                renderProducts();
-                showMsg('✅ Cardápio carregado do Google Sheets!', 'success');
-            } catch(e) {
-                console.error('Erro ao carregar cardápio:', e);
-                showMsg('⚠️ Usando cardápio local (offline)', 'success');
-                loadDefaultCardapio();
-            }
-        }
-
-        function loadDefaultCardapio() {
-            cardapio = [
-                { produto: 'Cerveja Brahma', categoria: 'Bebidas', preco: 9.00 },
-                { produto: 'Coca-Cola', categoria: 'Bebidas', preco: 6.00 },
-                { produto: 'X-Salada', categoria: 'Lanches', preco: 27.00 },
-                { produto: 'X-Bacon', categoria: 'Lanches', preco: 32.00 },
-                { produto: 'Porção Frita', categoria: 'Porções', preco: 45.00 },
-                { produto: 'Cerveja Heineken', categoria: 'Bebidas', preco: 12.00 },
-                { produto: 'Cerveja Itaipava', categoria: 'Bebidas', preco: 8.00 },
-                { produto: 'X-Tudo', categoria: 'Lanches', preco: 35.00 },
-                { produto: 'X-Frango', categoria: 'Lanches', preco: 25.00 },
-                { produto: 'X-Calabresa', categoria: 'Lanches', preco: 28.00 },
-                { produto: 'Hambúrguer Artesanal', categoria: 'Lanches', preco: 32.00 },
-                { produto: 'Cachorro-Quente', categoria: 'Lanches', preco: 18.00 },
-                { produto: 'Batata Frita P', categoria: 'Porções', preco: 15.00 },
-                { produto: 'Batata Frita G', categoria: 'Porções', preco: 25.00 },
-                { produto: 'Anéis de Cebola', categoria: 'Porções', preco: 22.00 }
-            ];
-            renderCategories();
-            renderProducts();
-        }
 
         function tryOpenAdmin() {
             if (!adminUnlocked) {
@@ -618,7 +628,7 @@
         function renderCategories() {
             const cats = [...new Set(cardapio.map(p => p.categoria))].sort();
             const div = document.getElementById('categories');
-            div.innerHTML = cats.map(c => '<button onclick="selectCat(this, \'' + c + '\')">' + c + '</button>').join('');
+            div.innerHTML = cats.map(c => '<button onclick="selectCat(this, ' + "'" + c + "'" + ')">' + c + '</button>').join('');
         }
 
         function selectCat(btn, cat) {
@@ -634,7 +644,7 @@
                 filtered = cardapio.filter(p => p.categoria === selectedCategory);
             }
             const div = document.getElementById('products');
-            div.innerHTML = filtered.map((p, idx) => '<button class="product-btn" onclick="selectProd(this, \'' + p.produto + '\', ' + p.preco + ')"><div class="product-name">' + p.produto + '</div><div class="product-price">R$ ' + p.preco.toFixed(2) + '</div></button>').join('');
+            div.innerHTML = filtered.map((p, idx) => '<button class="product-btn" onclick="selectProd(this, ' + "'" + p.produto + "'" + ', ' + p.preco + ')"><div class="product-name">' + p.produto + '</div><div class="product-price">R$ ' + p.preco.toFixed(2) + '</div></button>').join('');
         }
 
         function selectProd(btn, name, price) {
@@ -683,29 +693,6 @@
             let total = 0;
             tempOrder.forEach(i => total += i.sub);
             
-            // Enviar pro Google Sheets via Apps Script
-            const payload = {
-                cliente: client,
-                produtos: tempOrder,
-                total: total,
-                data: new Date().toLocaleString('pt-BR')
-            };
-            
-            fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Sucesso:', data);
-                showMsg('✅ Comanda enviada pro Sheets! Boa pedida', 'success');
-            })
-            .catch(error => {
-                console.error('Erro:', error);
-                showMsg('⚠️ Comanda local (sem conexão)', 'success');
-            });
-            
-            // Salvar localmente também
             comandas.push({
                 id: Date.now(),
                 cliente: client,
@@ -716,6 +703,7 @@
             });
             
             saveComandas();
+            showMsg('✅ Comanda fechada! Boa pedida', 'success');
             tempOrder = [];
             document.getElementById('order').classList.remove('show');
             document.getElementById('clientName').value = '';
@@ -735,7 +723,7 @@
             const clientComandas = comandas.filter(c => c.status === 'Aberto' && c.cliente.toLowerCase() === search);
             
             if (clientComandas.length === 0) {
-                div.innerHTML = '<p style="text-align: center; color: #999; margin: 20px 0;">Esse tá em dia!</p>';
+                div.innerHTML = '<p style="text-align: center; color: #999; margin: 20px 0; font-size: 15px;">Esse tá em dia!</p>';
                 renderResumo();
                 return;
             }
@@ -754,7 +742,7 @@
             
             let html = '<div class="info-box"><h3>🛒 Pediu isso:</h3>' + htmlItens + '</div>';
             html += '<div class="info-box"><h3>💸 Tá devendo:</h3><div class="value">R$ ' + totalGeral.toFixed(2) + '</div>';
-            html += '<button class="btn-pagar" onclick="markAsPaid(\'' + search + '\')" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important; margin-top: 15px; font-size: 16px;">✅ Pagou! Aprovado</button></div>';
+            html += '<button class="btn-pagar" onclick="markAsPaid(' + "'" + search + "'" + ')" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important; margin-top: 15px; font-size: 16px;">✅ Pagou! Aprovado</button></div>';
             
             div.innerHTML = html;
             renderResumo();
@@ -791,12 +779,24 @@
                 return;
             }
             
-            tbody.innerHTML = Object.entries(resumo).map(([cliente, total]) => '<tr><td>' + cliente + '</td><td>R$ ' + total.toFixed(2) + '</td></tr>').join('');
+            tbody.innerHTML = Object.entries(resumo).map(([cliente, total]) => `
+                <tr>
+                    <td>${cliente}</td>
+                    <td>R$ ${total.toFixed(2)}</td>
+                </tr>
+            `).join('');
         }
 
         function renderAdminTable() {
             const tbody = document.getElementById('adminTable');
-            tbody.innerHTML = cardapio.map((p, idx) => '<tr><td><input type="text" value="' + p.produto + '" onchange="updateProduct(' + idx + ', \'produto\', this.value)"></td><td><input type="text" value="' + p.categoria + '" onchange="updateProduct(' + idx + ', \'categoria\', this.value)"></td><td><input type="number" step="0.01" value="' + p.preco + '" onchange="updateProduct(' + idx + ', \'preco\', parseFloat(this.value))"></td><td><button class="btn-remove" onclick="removeProduct(' + idx + ')">❌ Tira</button></td></tr>').join('');
+            tbody.innerHTML = cardapio.map((p, idx) => `
+                <tr>
+                    <td><input type="text" value="${p.produto}" onchange="updateProduct(${idx}, 'produto', this.value)"></td>
+                    <td><input type="text" value="${p.categoria}" onchange="updateProduct(${idx}, 'categoria', this.value)"></td>
+                    <td><input type="number" step="0.01" value="${p.preco}" onchange="updateProduct(${idx}, 'preco', parseFloat(this.value))"></td>
+                    <td><button class="btn-remove" onclick="removeProduct(${idx})">❌ Tira</button></td>
+                </tr>
+            `).join('');
         }
 
         function updateProduct(idx, field, value) {
@@ -865,7 +865,9 @@
         // Inicializar
         loadFromLocalStorage();
         loadComandas();
-        loadCardapio(); // Carrega do Google Sheets
+        renderCategories();
+        renderProducts();
+        renderResumo();
     </script>
 </body>
 </html>
