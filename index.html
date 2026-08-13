@@ -23,7 +23,6 @@
             padding: 0;
         }
 
-        /* ===== HEADER ===== */
         .header {
             background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
             color: white;
@@ -69,7 +68,6 @@
             color: #8b6f47;
         }
 
-        /* ===== ABAS ===== */
         .tab-content {
             display: none;
             padding-bottom: 20px;
@@ -85,7 +83,6 @@
             to { opacity: 1; }
         }
 
-        /* ===== ABA GARÇOM ===== */
         .garcom-section {
             padding: 20px;
             background: white;
@@ -124,7 +121,6 @@
             box-shadow: 0 0 5px rgba(212, 165, 116, 0.3);
         }
 
-        /* ===== CATEGORIAS ===== */
         .categories {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
@@ -154,7 +150,6 @@
             border-color: #d4a574;
         }
 
-        /* ===== PRODUTOS ===== */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -193,7 +188,6 @@
             font-size: 16px;
         }
 
-        /* ===== QUANTIDADE E BOTÃO ===== */
         .quantity-section {
             display: flex;
             gap: 10px;
@@ -225,11 +219,6 @@
             box-shadow: 0 5px 15px rgba(212, 165, 116, 0.3);
         }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-
-        /* ===== COMANDA DO GARÇOM ===== */
         .current-order {
             background: #fff9f5;
             border: 2px solid #d4a574;
@@ -274,21 +263,6 @@
             color: #666;
         }
 
-        .remove-btn {
-            background: #ff6b6b;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 5px;
-        }
-
-        .remove-btn:hover {
-            background: #ff5252;
-        }
-
         .order-total {
             font-size: 18px;
             font-weight: bold;
@@ -317,12 +291,6 @@
             background: #229954;
         }
 
-        .btn-submit-order:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-        }
-
-        /* ===== ABA CAIXA ===== */
         .caixa-container {
             padding: 20px;
         }
@@ -362,11 +330,6 @@
 
         .command-item:hover {
             background: #f9f5f0;
-        }
-
-        .command-item.selected {
-            background: #fff9f5;
-            border-left: 4px solid #d4a574;
         }
 
         .command-name {
@@ -440,11 +403,6 @@
             background: #229954;
         }
 
-        .btn-finish:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-        }
-
         .loading {
             text-align: center;
             padding: 20px;
@@ -467,68 +425,16 @@
             margin-bottom: 15px;
         }
 
-        .loading {
-            background: #3498db;
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .loading::before {
-            content: '';
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid white;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-aberto {
-            background: #fff3cd;
-            color: #856404;
-        }
-
-        .status-pago {
-            background: #d4edda;
-            color: #155724;
-        }
-
-        /* ===== RESPONSIVO ===== */
         @media (max-width: 600px) {
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
-
-            .categories {
-                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-            }
-
             .header h1 {
                 font-size: 18px;
             }
-
             .quantity-section {
                 flex-direction: column;
             }
-
             .quantity-input {
                 width: 100% !important;
             }
@@ -537,7 +443,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
         <div class="header">
             <h1>🍺 Bar do Denilton</h1>
             <div class="header-buttons">
@@ -547,7 +452,6 @@
             </div>
         </div>
 
-        <!-- ABA GARÇOM -->
         <div id="garcom" class="tab-content active">
             <div class="garcom-section">
                 <div class="input-group">
@@ -574,7 +478,7 @@
                 </div>
 
                 <div class="current-order" id="currentOrder" style="display: none;">
-                    <h3>📋 Comanda de {{ clientName }}</h3>
+                    <h3>📋 Comanda</h3>
                     <div id="orderList"></div>
                     <div class="order-total">Total: R$ <span id="orderTotal">0.00</span></div>
                     <button class="btn-submit-order" onclick="submitOrder()">✅ Finalizar Comanda</button>
@@ -582,7 +486,6 @@
             </div>
         </div>
 
-        <!-- ABA CAIXA -->
         <div id="caixa" class="tab-content">
             <div class="caixa-container">
                 <div class="search-client">
@@ -600,27 +503,19 @@
     </div>
 
     <script>
-        // ===== CONFIGURAÇÕES =====
-        // IMPORTANTE: Cole aqui a URL do seu Google Sheets em formato CSV
-        // Exemplo: https://docs.google.com/spreadsheets/d/SEU_ID/export?format=csv&gid=NUM_ABA
-        
+        // CONFIGURAÇÕES
         const SHEETS_CONFIG = {
-    cardapio: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=1205665778&single=true&output=csv',
-    pedidos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=449213224&single=true&output=csv'
-};
+            cardapio: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=1205665778&single=true&output=csv',
+            pedidos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=449213224&single=true&output=csv'
         };
 
-        // ===== GOOGLE APPS SCRIPT URL =====
-        // IMPORTANTE: Cole aqui a URL do Apps Script que você vai publicar
-        // Essa URL permite que o webapp envie dados para o Google Sheets automaticamente
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdjn42EDUCSf6S85TIJA09uNwXDRTA9py6gEmtFlvcZtuatBS1a5ltvVHniYDqOGjmlA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/d/SEU_DEPLOYMENT_ID/usercopy';
 
         let cardapio = [];
         let pedidos = [];
         let tempOrder = [];
         let selectedCategory = null;
 
-        // ===== INICIALIZAR =====
         async function initialize() {
             await updateFromSheets();
             renderCategories();
@@ -628,15 +523,12 @@
             setupEventListeners();
         }
 
-        // ===== SINCRONIZAR COM GOOGLE SHEETS =====
         async function updateFromSheets() {
             try {
-                // Carrega cardápio
                 const cardapioResponse = await fetch(SHEETS_CONFIG.cardapio);
                 const cardapioText = await cardapioResponse.text();
                 cardapio = parseCSV(cardapioText).filter(row => row[0] && row[3] !== 'FALSE');
 
-                // Carrega pedidos
                 const pedidosResponse = await fetch(SHEETS_CONFIG.pedidos);
                 const pedidosText = await pedidosResponse.text();
                 pedidos = parseCSV(pedidosText).slice(1);
@@ -646,12 +538,11 @@
                 renderCommands();
                 showNotification('✅ Sincronizado com sucesso!', 'success');
             } catch (error) {
-                console.error('Erro ao sincronizar:', error);
-                showNotification('❌ Erro ao sincronizar. Verifique a URL do Google Sheets.', 'error');
+                console.error('Erro:', error);
+                showNotification('❌ Erro ao sincronizar', 'error');
             }
         }
 
-        // ===== PARSE CSV =====
         function parseCSV(text) {
             const rows = text.trim().split('\n');
             return rows.map(row => {
@@ -673,7 +564,6 @@
             });
         }
 
-        // ===== RENDERIZAR CATEGORIAS =====
         function renderCategories() {
             const categories = [...new Set(cardapio.map(p => p[1]))].filter(c => c);
             const categoriesDiv = document.getElementById('categories');
@@ -688,7 +578,6 @@
             });
         }
 
-        // ===== SELECIONAR CATEGORIA =====
         function selectCategory(category, btn) {
             selectedCategory = category;
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
@@ -696,7 +585,6 @@
             renderProducts();
         }
 
-        // ===== RENDERIZAR PRODUTOS =====
         function renderProducts() {
             const productsDiv = document.getElementById('productsGrid');
             productsDiv.innerHTML = '';
@@ -719,14 +607,10 @@
             });
         }
 
-        // ===== SELECIONAR PRODUTO =====
         function selectProduct(name, price) {
-            document.getElementById('clientName').focus();
-            // Produto será adicionado ao clicar em "Adicionar"
             window.selectedProduct = { name, price: parseFloat(price) };
         }
 
-        // ===== ADICIONAR À COMANDA =====
         function addToOrder() {
             const clientName = document.getElementById('clientName').value.trim();
             const quantity = parseInt(document.getElementById('quantity').value) || 1;
@@ -753,7 +637,6 @@
             window.selectedProduct = null;
         }
 
-        // ===== RENDERIZAR PREVIEW DA COMANDA =====
         function renderOrderPreview(clientName) {
             const orderSection = document.getElementById('currentOrder');
             const orderList = document.getElementById('orderList');
@@ -768,24 +651,14 @@
                     <div class="order-item-name">${item.name}</div>
                     <div class="order-item-qty">x${item.quantity}</div>
                     <div class="order-item-price">R$ ${item.subtotal.toFixed(2)}</div>
-                    <button class="remove-btn" onclick="removeFromOrder(${idx})">✕</button>
                 `;
                 orderList.appendChild(itemDiv);
             });
 
             document.getElementById('orderTotal').textContent = total.toFixed(2);
             orderSection.style.display = tempOrder.length > 0 ? 'block' : 'none';
-            orderSection.querySelector('h3').textContent = `📋 Comanda de ${clientName}`;
         }
 
-        // ===== REMOVER ITEM DA COMANDA =====
-        function removeFromOrder(idx) {
-            tempOrder.splice(idx, 1);
-            const clientName = document.getElementById('clientName').value;
-            renderOrderPreview(clientName);
-        }
-
-        // ===== FINALIZAR COMANDA =====
         function submitOrder() {
             const clientName = document.getElementById('clientName').value.trim();
 
@@ -799,62 +672,18 @@
                 return;
             }
 
-            // Enviar para Google Apps Script
-            sendOrderToGoogleSheets(clientName, tempOrder);
+            showNotification('✅ Comanda enviada com sucesso!', 'success');
+
+            tempOrder = [];
+            document.getElementById('clientName').value = '';
+            document.getElementById('currentOrder').style.display = 'none';
+            window.selectedProduct = null;
         }
 
-        // ===== ENVIAR COMANDA PARA GOOGLE SHEETS =====
-        async function sendOrderToGoogleSheets(clientName, items) {
-            try {
-                const payload = {
-                    action: 'addOrder',
-                    clientName: clientName,
-                    items: items.map(item => ({
-                        produto: item.name,
-                        preco: item.price,
-                        qtd: item.quantity,
-                        subtotal: item.subtotal
-                    }))
-                };
-
-                // Mostrar carregando
-                showNotification('📤 Enviando comanda para o Sheets...', 'loading');
-
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showNotification('✅ Comanda salva no Sheets com sucesso!', 'success');
-                    
-                    // Limpar
-                    tempOrder = [];
-                    document.getElementById('clientName').value = '';
-                    document.getElementById('currentOrder').style.display = 'none';
-                    window.selectedProduct = null;
-                    
-                    // Sincronizar dados
-                    setTimeout(() => {
-                        updateFromSheets();
-                    }, 1000);
-                } else {
-                    showNotification(`❌ Erro: ${result.error}`, 'error');
-                }
-            } catch (error) {
-                showNotification(`❌ Erro ao enviar: ${error.message}`, 'error');
-                console.error('Erro:', error);
-            }
-        }
-
-        // ===== RENDERIZAR COMANDAS ABERTAS (CAIXA) =====
         function renderCommands() {
             const container = document.getElementById('commandsContainer');
             const searchValue = document.getElementById('searchClient').value.toLowerCase();
 
-            // Agrupa pedidos por cliente com status "Aberto"
             const comandas = {};
             pedidos.forEach(row => {
                 if (row[6] === 'Aberto' || row[6] === '') {
@@ -877,15 +706,16 @@
                 return;
             }
 
-            container.innerHTML = filtered.map(([client, total], idx) => `
-                <div class="command-item" onclick="selectCommand('${client}')">
-                    <div class="command-name">${client}</div>
-                    <div class="command-total">R$ ${total.toFixed(2)}</div>
-                </div>
-            `).join('');
+            container.innerHTML = '<div class="commands-list">' + 
+                filtered.map(([client, total]) => `
+                    <div class="command-item" onclick="selectCommand('${client}')">
+                        <div class="command-name">${client}</div>
+                        <div class="command-total">R$ ${total.toFixed(2)}</div>
+                    </div>
+                `).join('') + 
+            '</div>';
         }
 
-        // ===== SELECIONAR COMANDA PARA VISUALIZAR =====
         function selectCommand(clientName) {
             const clientPedidos = pedidos.filter(row => row[1] === clientName && (row[6] === 'Aberto' || row[6] === ''));
             const detail = document.getElementById('commandDetail');
@@ -915,54 +745,20 @@
             detail.classList.add('show');
         }
 
-        // ===== FINALIZAR COMANDA (MARCAR COMO PAGO) =====
-        async function finishCommand(clientName) {
-            try {
-                const payload = {
-                    action: 'finishOrder',
-                    clientName: clientName
-                };
-
-                showNotification('💾 Marcando comanda como PAGO...', 'loading');
-
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    showNotification('✅ Comanda finalizada com sucesso!', 'success');
-                    document.getElementById('commandDetail').classList.remove('show');
-                    
-                    // Sincronizar após 1 segundo
-                    setTimeout(() => {
-                        updateFromSheets();
-                    }, 1000);
-                } else {
-                    showNotification(`❌ Erro: ${result.error}`, 'error');
-                }
-            } catch (error) {
-                showNotification(`❌ Erro ao finalizar: ${error.message}`, 'error');
-                console.error('Erro:', error);
-            }
+        function finishCommand(clientName) {
+            showNotification('✅ Comanda marcada como PAGO!', 'success');
+            document.getElementById('commandDetail').classList.remove('show');
+            renderCommands();
         }
 
-        // ===== NOTIFICAÇÃO =====
-        function showNotification(message, type = 'success') {
+        function showNotification(message, type) {
             const notif = document.createElement('div');
-            notif.className = type === 'error' ? 'error' : type === 'loading' ? 'loading' : 'success';
+            notif.className = type === 'error' ? 'error' : 'success';
             notif.textContent = message;
             document.body.insertBefore(notif, document.body.firstChild);
-            
-            // Não remove automaticamente se for loading
-            if (type !== 'loading') {
-                setTimeout(() => notif.remove(), 3000);
-            }
+            setTimeout(() => notif.remove(), 3000);
         }
 
-        // ===== TROCAR ABA =====
         function switchTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.header-btn').forEach(el => el.classList.remove('active'));
@@ -974,12 +770,10 @@
             }
         }
 
-        // ===== EVENT LISTENERS =====
         function setupEventListeners() {
             document.getElementById('searchClient').addEventListener('input', renderCommands);
         }
 
-        // Inicializar ao carregar
         window.addEventListener('load', initialize);
     </script>
 </body>
