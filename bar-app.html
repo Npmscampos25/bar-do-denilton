@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bar do Denilton - Sistema de Comandas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
+            color: white;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .header-btn:hover {
+            background: white;
+            color: #8b6f47;
+        }
+
+        .header-btn.active {
+            background: white;
+            color: #8b6f47;
+        }
+
+        /* ===== ABAS ===== */
+        .tab-content {
+            display: none;
+            padding-bottom: 20px;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ===== ABA GARÇOM ===== */
+        .garcom-section {
+            padding: 20px;
+            background: white;
+            margin: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #d4a574;
+            box-shadow: 0 0 5px rgba(212, 165, 116, 0.3);
+        }
+
+        /* ===== CATEGORIAS ===== */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .category-btn {
+            padding: 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 13px;
+        }
+
+        .category-btn:hover {
+            border-color: #d4a574;
+            background: #f9f5f0;
+        }
+
+        .category-btn.active {
+            background: #d4a574;
+            color: white;
+            border-color: #d4a574;
+        }
+
+        /* ===== PRODUTOS ===== */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .product-btn {
+            padding: 15px 10px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .product-btn:hover {
+            border-color: #d4a574;
+            background: #f9f5f0;
+        }
+
+        .product-name {
+            font-weight: bold;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .product-price {
+            color: #d4a574;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* ===== QUANTIDADE E BOTÃO ===== */
+        .quantity-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
+        }
+
+        .quantity-input {
+            width: 80px !important;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 165, 116, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* ===== COMANDA DO GARÇOM ===== */
+        .current-order {
+            background: #fff9f5;
+            border: 2px solid #d4a574;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .current-order h3 {
+            color: #8b6f47;
+            margin-bottom: 10px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        .order-item:last-child {
+            border-bottom: none;
+        }
+
+        .order-item-name {
+            flex: 1;
+            font-weight: bold;
+        }
+
+        .order-item-price {
+            color: #d4a574;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .order-item-qty {
+            min-width: 40px;
+            text-align: center;
+            color: #666;
+        }
+
+        .remove-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .remove-btn:hover {
+            background: #ff5252;
+        }
+
+        .order-total {
+            font-size: 18px;
+            font-weight: bold;
+            color: #d4a574;
+            text-align: right;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 2px solid #d4a574;
+        }
+
+        .btn-submit-order {
+            width: 100%;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .btn-submit-order:hover {
+            background: #229954;
+        }
+
+        .btn-submit-order:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        /* ===== ABA CAIXA ===== */
+        .caixa-container {
+            padding: 20px;
+        }
+
+        .search-client {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            width: 100% !important;
+            padding: 15px !important;
+            font-size: 16px !important;
+            border: 2px solid #ffc107 !important;
+            border-radius: 8px !important;
+        }
+
+        .commands-list {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .command-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .command-item:hover {
+            background: #f9f5f0;
+        }
+
+        .command-item.selected {
+            background: #fff9f5;
+            border-left: 4px solid #d4a574;
+        }
+
+        .command-name {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .command-total {
+            color: #d4a574;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .command-detail {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            display: none;
+        }
+
+        .command-detail.show {
+            display: block;
+        }
+
+        .detail-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #d4a574;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .detail-total {
+            font-size: 20px;
+            font-weight: bold;
+            color: #d4a574;
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #d4a574;
+        }
+
+        .btn-finish {
+            width: 100%;
+            padding: 15px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .btn-finish:hover {
+            background: #229954;
+        }
+
+        .btn-finish:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .loading {
+            background: #3498db;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .loading::before {
+            content: '';
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-aberto {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-pago {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        /* ===== RESPONSIVO ===== */
+        @media (max-width: 600px) {
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .categories {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .quantity-section {
+                flex-direction: column;
+            }
+
+            .quantity-input {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>🍺 Bar do Denilton</h1>
+            <div class="header-buttons">
+                <button class="header-btn active" onclick="switchTab('garcom')">🍽️ Garçom</button>
+                <button class="header-btn" onclick="switchTab('caixa')">💰 Caixa</button>
+                <button class="header-btn" onclick="updateFromSheets()">🔄 Sincronizar</button>
+            </div>
+        </div>
+
+        <!-- ABA GARÇOM -->
+        <div id="garcom" class="tab-content active">
+            <div class="garcom-section">
+                <div class="input-group">
+                    <label>👤 Nome do Cliente</label>
+                    <input type="text" id="clientName" placeholder="Digite o nome do cliente" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <label>📂 Categoria</label>
+                    <div class="categories" id="categories"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>🍔 Produto</label>
+                    <div class="products-grid" id="productsGrid"></div>
+                </div>
+
+                <div class="quantity-section">
+                    <div class="input-group" style="flex: 0 0 80px; margin-bottom: 0;">
+                        <label>Qtd</label>
+                        <input type="number" id="quantity" value="1" min="1" class="quantity-input">
+                    </div>
+                    <button class="btn-primary" onclick="addToOrder()">➕ Adicionar</button>
+                </div>
+
+                <div class="current-order" id="currentOrder" style="display: none;">
+                    <h3>📋 Comanda de {{ clientName }}</h3>
+                    <div id="orderList"></div>
+                    <div class="order-total">Total: R$ <span id="orderTotal">0.00</span></div>
+                    <button class="btn-submit-order" onclick="submitOrder()">✅ Finalizar Comanda</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA CAIXA -->
+        <div id="caixa" class="tab-content">
+            <div class="caixa-container">
+                <div class="search-client">
+                    <label style="display: block; margin-bottom: 8px; font-weight: bold;">🔍 Buscar Cliente</label>
+                    <input type="text" id="searchClient" class="search-input" placeholder="Digite o nome do cliente" autocomplete="off">
+                </div>
+
+                <div id="commandsContainer">
+                    <div class="loading">Carregando comandas abertas...</div>
+                </div>
+
+                <div class="command-detail" id="commandDetail"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURAÇÕES =====
+        // IMPORTANTE: Cole aqui a URL do seu Google Sheets em formato CSV
+        // Exemplo: https://docs.google.com/spreadsheets/d/SEU_ID/export?format=csv&gid=NUM_ABA
+        
+        const SHEETS_CONFIG = {
+    cardapio: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=1205665778&single=true&output=csv',
+    pedidos: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=449213224&single=true&output=csv'
+};
+        };
+
+        // ===== GOOGLE APPS SCRIPT URL =====
+        // IMPORTANTE: Cole aqui a URL do Apps Script que você vai publicar
+        // Essa URL permite que o webapp envie dados para o Google Sheets automaticamente
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdjn42EDUCSf6S85TIJA09uNwXDRTA9py6gEmtFlvcZtuatBS1a5ltvVHniYDqOGjmlA/exec';
+
+        let cardapio = [];
+        let pedidos = [];
+        let tempOrder = [];
+        let selectedCategory = null;
+
+        // ===== INICIALIZAR =====
+        async function initialize() {
+            await updateFromSheets();
+            renderCategories();
+            renderProducts();
+            setupEventListeners();
+        }
+
+        // ===== SINCRONIZAR COM GOOGLE SHEETS =====
+        async function updateFromSheets() {
+            try {
+                // Carrega cardápio
+                const cardapioResponse = await fetch(SHEETS_CONFIG.cardapio);
+                const cardapioText = await cardapioResponse.text();
+                cardapio = parseCSV(cardapioText).filter(row => row[0] && row[3] !== 'FALSE');
+
+                // Carrega pedidos
+                const pedidosResponse = await fetch(SHEETS_CONFIG.pedidos);
+                const pedidosText = await pedidosResponse.text();
+                pedidos = parseCSV(pedidosText).slice(1);
+
+                renderCategories();
+                renderProducts();
+                renderCommands();
+                showNotification('✅ Sincronizado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao sincronizar:', error);
+                showNotification('❌ Erro ao sincronizar. Verifique a URL do Google Sheets.', 'error');
+            }
+        }
+
+        // ===== PARSE CSV =====
+        function parseCSV(text) {
+            const rows = text.trim().split('\n');
+            return rows.map(row => {
+                const cols = [];
+                let current = '';
+                let inQuotes = false;
+                for (let char of row) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        cols.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                cols.push(current.trim());
+                return cols;
+            });
+        }
+
+        // ===== RENDERIZAR CATEGORIAS =====
+        function renderCategories() {
+            const categories = [...new Set(cardapio.map(p => p[1]))].filter(c => c);
+            const categoriesDiv = document.getElementById('categories');
+            categoriesDiv.innerHTML = '';
+
+            categories.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'category-btn';
+                btn.textContent = cat;
+                btn.onclick = () => selectCategory(cat, btn);
+                categoriesDiv.appendChild(btn);
+            });
+        }
+
+        // ===== SELECIONAR CATEGORIA =====
+        function selectCategory(category, btn) {
+            selectedCategory = category;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderProducts();
+        }
+
+        // ===== RENDERIZAR PRODUTOS =====
+        function renderProducts() {
+            const productsDiv = document.getElementById('productsGrid');
+            productsDiv.innerHTML = '';
+
+            let filtered = cardapio;
+            if (selectedCategory) {
+                filtered = cardapio.filter(p => p[1] === selectedCategory);
+            }
+
+            filtered.forEach(product => {
+                const [name, category, price] = product;
+                const btn = document.createElement('button');
+                btn.className = 'product-btn';
+                btn.innerHTML = `
+                    <div class="product-name">${name}</div>
+                    <div class="product-price">R$ ${parseFloat(price).toFixed(2)}</div>
+                `;
+                btn.onclick = () => selectProduct(name, price);
+                productsDiv.appendChild(btn);
+            });
+        }
+
+        // ===== SELECIONAR PRODUTO =====
+        function selectProduct(name, price) {
+            document.getElementById('clientName').focus();
+            // Produto será adicionado ao clicar em "Adicionar"
+            window.selectedProduct = { name, price: parseFloat(price) };
+        }
+
+        // ===== ADICIONAR À COMANDA =====
+        function addToOrder() {
+            const clientName = document.getElementById('clientName').value.trim();
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+
+            if (!clientName) {
+                showNotification('❌ Digite o nome do cliente', 'error');
+                return;
+            }
+
+            if (!window.selectedProduct) {
+                showNotification('❌ Selecione um produto', 'error');
+                return;
+            }
+
+            const item = {
+                ...window.selectedProduct,
+                quantity,
+                subtotal: window.selectedProduct.price * quantity
+            };
+
+            tempOrder.push(item);
+            renderOrderPreview(clientName);
+            document.getElementById('quantity').value = '1';
+            window.selectedProduct = null;
+        }
+
+        // ===== RENDERIZAR PREVIEW DA COMANDA =====
+        function renderOrderPreview(clientName) {
+            const orderSection = document.getElementById('currentOrder');
+            const orderList = document.getElementById('orderList');
+            orderList.innerHTML = '';
+
+            let total = 0;
+            tempOrder.forEach((item, idx) => {
+                total += item.subtotal;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'order-item';
+                itemDiv.innerHTML = `
+                    <div class="order-item-name">${item.name}</div>
+                    <div class="order-item-qty">x${item.quantity}</div>
+                    <div class="order-item-price">R$ ${item.subtotal.toFixed(2)}</div>
+                    <button class="remove-btn" onclick="removeFromOrder(${idx})">✕</button>
+                `;
+                orderList.appendChild(itemDiv);
+            });
+
+            document.getElementById('orderTotal').textContent = total.toFixed(2);
+            orderSection.style.display = tempOrder.length > 0 ? 'block' : 'none';
+            orderSection.querySelector('h3').textContent = `📋 Comanda de ${clientName}`;
+        }
+
+        // ===== REMOVER ITEM DA COMANDA =====
+        function removeFromOrder(idx) {
+            tempOrder.splice(idx, 1);
+            const clientName = document.getElementById('clientName').value;
+            renderOrderPreview(clientName);
+        }
+
+        // ===== FINALIZAR COMANDA =====
+        function submitOrder() {
+            const clientName = document.getElementById('clientName').value.trim();
+
+            if (!clientName) {
+                showNotification('❌ Digite o nome do cliente', 'error');
+                return;
+            }
+
+            if (tempOrder.length === 0) {
+                showNotification('❌ A comanda está vazia', 'error');
+                return;
+            }
+
+            // Enviar para Google Apps Script
+            sendOrderToGoogleSheets(clientName, tempOrder);
+        }
+
+        // ===== ENVIAR COMANDA PARA GOOGLE SHEETS =====
+        async function sendOrderToGoogleSheets(clientName, items) {
+            try {
+                const payload = {
+                    action: 'addOrder',
+                    clientName: clientName,
+                    items: items.map(item => ({
+                        produto: item.name,
+                        preco: item.price,
+                        qtd: item.quantity,
+                        subtotal: item.subtotal
+                    }))
+                };
+
+                // Mostrar carregando
+                showNotification('📤 Enviando comanda para o Sheets...', 'loading');
+
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('✅ Comanda salva no Sheets com sucesso!', 'success');
+                    
+                    // Limpar
+                    tempOrder = [];
+                    document.getElementById('clientName').value = '';
+                    document.getElementById('currentOrder').style.display = 'none';
+                    window.selectedProduct = null;
+                    
+                    // Sincronizar dados
+                    setTimeout(() => {
+                        updateFromSheets();
+                    }, 1000);
+                } else {
+                    showNotification(`❌ Erro: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Erro ao enviar: ${error.message}`, 'error');
+                console.error('Erro:', error);
+            }
+        }
+
+        // ===== RENDERIZAR COMANDAS ABERTAS (CAIXA) =====
+        function renderCommands() {
+            const container = document.getElementById('commandsContainer');
+            const searchValue = document.getElementById('searchClient').value.toLowerCase();
+
+            // Agrupa pedidos por cliente com status "Aberto"
+            const comandas = {};
+            pedidos.forEach(row => {
+                if (row[6] === 'Aberto' || row[6] === '') {
+                    const client = row[1] || 'Sem nome';
+                    const total = parseFloat(row[5]) || 0;
+                    if (!comandas[client]) {
+                        comandas[client] = 0;
+                    }
+                    comandas[client] += total;
+                }
+            });
+
+            let filtered = Object.entries(comandas);
+            if (searchValue) {
+                filtered = filtered.filter(([name]) => name.toLowerCase().includes(searchValue));
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="loading">Nenhuma comanda aberta</div>';
+                return;
+            }
+
+            container.innerHTML = filtered.map(([client, total], idx) => `
+                <div class="command-item" onclick="selectCommand('${client}')">
+                    <div class="command-name">${client}</div>
+                    <div class="command-total">R$ ${total.toFixed(2)}</div>
+                </div>
+            `).join('');
+        }
+
+        // ===== SELECIONAR COMANDA PARA VISUALIZAR =====
+        function selectCommand(clientName) {
+            const clientPedidos = pedidos.filter(row => row[1] === clientName && (row[6] === 'Aberto' || row[6] === ''));
+            const detail = document.getElementById('commandDetail');
+
+            let html = `<div class="detail-header">Comanda: ${clientName}</div>`;
+            let total = 0;
+
+            clientPedidos.forEach(row => {
+                const produto = row[2];
+                const preco = parseFloat(row[3]) || 0;
+                const qtd = parseInt(row[4]) || 1;
+                const subtotal = preco * qtd;
+                total += subtotal;
+
+                html += `
+                    <div class="detail-item">
+                        <div>${produto} x${qtd}</div>
+                        <div>R$ ${subtotal.toFixed(2)}</div>
+                    </div>
+                `;
+            });
+
+            html += `<div class="detail-total">TOTAL: R$ ${total.toFixed(2)}</div>`;
+            html += `<button class="btn-finish" onclick="finishCommand('${clientName}')">✅ Marcar como PAGO</button>`;
+
+            detail.innerHTML = html;
+            detail.classList.add('show');
+        }
+
+        // ===== FINALIZAR COMANDA (MARCAR COMO PAGO) =====
+        async function finishCommand(clientName) {
+            try {
+                const payload = {
+                    action: 'finishOrder',
+                    clientName: clientName
+                };
+
+                showNotification('💾 Marcando comanda como PAGO...', 'loading');
+
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showNotification('✅ Comanda finalizada com sucesso!', 'success');
+                    document.getElementById('commandDetail').classList.remove('show');
+                    
+                    // Sincronizar após 1 segundo
+                    setTimeout(() => {
+                        updateFromSheets();
+                    }, 1000);
+                } else {
+                    showNotification(`❌ Erro: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                showNotification(`❌ Erro ao finalizar: ${error.message}`, 'error');
+                console.error('Erro:', error);
+            }
+        }
+
+        // ===== NOTIFICAÇÃO =====
+        function showNotification(message, type = 'success') {
+            const notif = document.createElement('div');
+            notif.className = type === 'error' ? 'error' : type === 'loading' ? 'loading' : 'success';
+            notif.textContent = message;
+            document.body.insertBefore(notif, document.body.firstChild);
+            
+            // Não remove automaticamente se for loading
+            if (type !== 'loading') {
+                setTimeout(() => notif.remove(), 3000);
+            }
+        }
+
+        // ===== TROCAR ABA =====
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.header-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'caixa') {
+                renderCommands();
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        function setupEventListeners() {
+            document.getElementById('searchClient').addEventListener('input', renderCommands);
+        }
+
+        // Inicializar ao carregar
+        window.addEventListener('load', initialize);
+    </script>
+</body>
+</html>
