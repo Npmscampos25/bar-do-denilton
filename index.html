@@ -62,6 +62,34 @@
         .msg.success { background: #27ae60; color: white; }
         .msg.error { background: #ff6b6b; color: white; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .admin-table th { background: #d4a574; color: white; font-weight: bold; }
+        .admin-table input { width: 100%; margin: 0; }
+        .btn-add { background: #27ae60 !important; margin-top: 10px; }
+        .btn-remove { background: #ff6b6b !important; width: 100%; margin: 0; padding: 8px; }
+        
+        .caixa-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .caixa-table th, .caixa-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .caixa-table th { background: #27ae60; color: white; font-weight: bold; }
+        .caixa-table tr:nth-child(even) { background: #f9f9f9; }
+        
+        .resumo-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .resumo-table th, .resumo-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        .resumo-table th { background: #4a90e2; color: white; font-weight: bold; }
+        .resumo-table tr:nth-child(even) { background: #f0f7ff; }
+        .resumo-table td:last-child { text-align: right; font-weight: bold; color: #d4a574; }
+        
+        .search-section { background: #fff9f5; border: 2px solid #d4a574; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
+        .search-section label { display: block; font-weight: bold; margin-bottom: 8px; }
+        
+        .info-box { background: #f0f7ff; border-left: 4px solid #4a90e2; padding: 15px; margin: 15px 0; }
+        .info-box h3 { color: #4a90e2; margin-bottom: 10px; }
+        .info-box .value { font-size: 24px; font-weight: bold; color: #d4a574; }
+        
+        .btn-pagar { background: #27ae60 !important; margin-top: 10px; }
+        .btn-pagar:hover { background: #229954 !important; }
     </style>
 </head>
 <body>
@@ -70,7 +98,7 @@
         <div class="header-buttons">
             <button class="header-btn active" onclick="switchTab('garcom')">🍽️ Garçom</button>
             <button class="header-btn" onclick="switchTab('caixa')">💰 Caixa</button>
-            <button class="header-btn" onclick="loadData()">🔄 Sincronizar</button>
+            <button class="header-btn" onclick="switchTab('admin')">⚙️ Admin</button>
         </div>
     </div>
 
@@ -111,59 +139,72 @@
     <div id="caixa" class="tab-content">
         <div class="section">
             <h2>💰 Caixa</h2>
-            <p style="margin-top: 10px;">Versão simplificada</p>
+            
+            <div class="search-section">
+                <label>🔍 PESQUISAR CLIENTE:</label>
+                <input type="text" id="searchClient" placeholder="Digite o nome do cliente" onkeyup="searchAndShowComanda()">
+            </div>
+            
+            <div id="comandaDetail"></div>
+            
+            <h3 style="margin-top: 30px; color: #4a90e2;">📋 COMANDAS ABERTAS AGORA:</h3>
+            <table class="resumo-table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="resumoTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="admin" class="tab-content">
+        <div class="section">
+            <h2>⚙️ Administração do Cardápio</h2>
+            <p style="margin: 10px 0;">Adicione, edite ou remova produtos abaixo:</p>
+            
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Preço</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="adminTable"></tbody>
+            </table>
+            
+            <button class="btn-add" onclick="addNewProduct()">➕ Adicionar Novo Produto</button>
         </div>
     </div>
 
     <script>
-        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/export?format=csv&gid=1205665778';
+        let cardapio = [
+            { produto: 'Cerveja Brahma', categoria: 'Bebidas', preco: 9.00 },
+            { produto: 'Coca-Cola', categoria: 'Bebidas', preco: 6.00 },
+            { produto: 'X-Salada', categoria: 'Lanches', preco: 27.00 },
+            { produto: 'X-Bacon', categoria: 'Lanches', preco: 32.00 },
+            { produto: 'Porção Frita', categoria: 'Porções', preco: 45.00 },
+            { produto: 'Cerveja Heineken', categoria: 'Bebidas', preco: 12.00 },
+            { produto: 'Cerveja Itaipava', categoria: 'Bebidas', preco: 8.00 },
+            { produto: 'X-Tudo', categoria: 'Lanches', preco: 35.00 },
+            { produto: 'X-Frango', categoria: 'Lanches', preco: 25.00 },
+            { produto: 'X-Calabresa', categoria: 'Lanches', preco: 28.00 },
+            { produto: 'Hambúrguer Artesanal', categoria: 'Lanches', preco: 32.00 },
+            { produto: 'Cachorro-Quente', categoria: 'Lanches', preco: 18.00 },
+            { produto: 'Batata Frita P', categoria: 'Porções', preco: 15.00 },
+            { produto: 'Batata Frita G', categoria: 'Porções', preco: 25.00 },
+            { produto: 'Anéis de Cebola', categoria: 'Porções', preco: 22.00 }
+        ];
         
-        let cardapio = [];
+        let comandas = [];
         let tempOrder = [];
         let selectedProduct = null;
         let selectedCategory = null;
-
-        function parsePrice(str) {
-            if (!str) return 0;
-            let clean = str.toString().replace(/R\$/g, '').replace(/\./g, '').replace(/,/g, '.').trim();
-            let parsed = parseFloat(clean);
-            return isNaN(parsed) ? 0 : parsed;
-        }
-
-        async function loadData() {
-            try {
-                showMsg('Carregando...', 'success');
-                const res = await fetch(CSV_URL);
-                const text = await res.text();
-                
-                const lines = text.split('\n');
-                cardapio = [];
-                
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (!line) continue;
-                    
-                    const parts = line.split(',');
-                    if (parts.length < 4) continue;
-                    
-                    const produto = parts[0].trim();
-                    const categoria = parts[1].trim();
-                    const preco = parsePrice(parts[2]);
-                    const ativo = parts[3].trim();
-                    
-                    if (produto && categoria && preco > 0 && ativo) {
-                        cardapio.push({ produto, categoria, preco });
-                    }
-                }
-                
-                renderCategories();
-                renderProducts();
-                showMsg('✅ Sincronizado! ' + cardapio.length + ' produtos', 'success');
-            } catch(e) {
-                console.error('Erro:', e);
-                showMsg('❌ Erro: ' + e.message, 'error');
-            }
-        }
+        let selectedComandaId = null;
 
         function renderCategories() {
             const cats = [...new Set(cardapio.map(p => p.categoria))].sort();
@@ -229,11 +270,157 @@
         function submitOrder() {
             const client = document.getElementById('clientName').value.trim();
             if (!client || tempOrder.length === 0) { showMsg('❌ Erro', 'error'); return; }
+            
+            let total = 0;
+            tempOrder.forEach(i => total += i.sub);
+            
+            comandas.push({
+                id: Date.now(),
+                cliente: client,
+                items: [...tempOrder],
+                total: total,
+                status: 'Aberto',
+                data: new Date().toLocaleString('pt-BR')
+            });
+            
+            saveComandas();
             showMsg('✅ Comanda enviada com sucesso!', 'success');
             tempOrder = [];
             document.getElementById('order').classList.remove('show');
             document.getElementById('clientName').value = '';
             document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function searchAndShowComanda() {
+            const search = document.getElementById('searchClient').value.toLowerCase().trim();
+            const div = document.getElementById('comandaDetail');
+            
+            if (!search) {
+                div.innerHTML = '';
+                renderResumo();
+                return;
+            }
+            
+            const clientComandas = comandas.filter(c => c.status === 'Aberto' && c.cliente.toLowerCase() === search);
+            
+            if (clientComandas.length === 0) {
+                div.innerHTML = '<p style="text-align: center; color: #999; margin: 20px 0;">Nenhuma comanda aberta para este cliente</p>';
+                renderResumo();
+                return;
+            }
+            
+            let totalGeral = 0;
+            let htmlItens = '<table class="caixa-table"><thead><tr><th>Produto</th><th>Preço Unit</th><th>Qtd</th><th>Subtotal</th></tr></thead><tbody>';
+            
+            clientComandas.forEach(comanda => {
+                comanda.items.forEach(item => {
+                    htmlItens += '<tr><td>' + item.name + '</td><td>R$ ' + item.price.toFixed(2) + '</td><td>' + item.qty + '</td><td>R$ ' + item.sub.toFixed(2) + '</td></tr>';
+                    totalGeral += item.sub;
+                });
+            });
+            
+            htmlItens += '</tbody></table>';
+            
+            let html = '<div class="info-box"><h3>ITENS DA COMANDA:</h3>' + htmlItens + '</div>';
+            html += '<div class="info-box"><h3>TOTAL A PAGAR:</h3><div class="value">R$ ' + totalGeral.toFixed(2) + '</div>';
+            html += '<button class="btn-pagar" onclick="markAsPaid(' + "'" + search + "'" + ')">✅ Marcar como PAGO</button></div>';
+            
+            div.innerHTML = html;
+            renderResumo();
+        }
+
+        function markAsPaid(clientName) {
+            comandas.forEach(c => {
+                if (c.status === 'Aberto' && c.cliente.toLowerCase() === clientName.toLowerCase()) {
+                    c.status = 'Pago';
+                }
+            });
+            
+            saveComandas();
+            showMsg('✅ Comanda marcada como PAGO!', 'success');
+            document.getElementById('searchClient').value = '';
+            document.getElementById('comandaDetail').innerHTML = '';
+            renderResumo();
+        }
+
+        function renderResumo() {
+            const tbody = document.getElementById('resumoTable');
+            const abertos = comandas.filter(c => c.status === 'Aberto');
+            
+            const resumo = {};
+            abertos.forEach(c => {
+                if (!resumo[c.cliente]) {
+                    resumo[c.cliente] = 0;
+                }
+                resumo[c.cliente] += c.total;
+            });
+            
+            if (Object.keys(resumo).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #999;">Nenhuma comanda aberta</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = Object.entries(resumo).map(([cliente, total]) => `
+                <tr>
+                    <td>${cliente}</td>
+                    <td>R$ ${total.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTable');
+            tbody.innerHTML = cardapio.map((p, idx) => `
+                <tr>
+                    <td><input type="text" value="${p.produto}" onchange="updateProduct(${idx}, 'produto', this.value)"></td>
+                    <td><input type="text" value="${p.categoria}" onchange="updateProduct(${idx}, 'categoria', this.value)"></td>
+                    <td><input type="number" step="0.01" value="${p.preco}" onchange="updateProduct(${idx}, 'preco', parseFloat(this.value))"></td>
+                    <td><button class="btn-remove" onclick="removeProduct(${idx})">❌ Remover</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateProduct(idx, field, value) {
+            cardapio[idx][field] = value;
+            saveToLocalStorage();
+            renderCategories();
+            renderProducts();
+        }
+
+        function removeProduct(idx) {
+            cardapio.splice(idx, 1);
+            saveToLocalStorage();
+            renderAdminTable();
+            renderCategories();
+            renderProducts();
+        }
+
+        function addNewProduct() {
+            cardapio.push({ produto: 'Novo Produto', categoria: 'Bebidas', preco: 0.00 });
+            saveToLocalStorage();
+            renderAdminTable();
+        }
+
+        function saveComandas() {
+            localStorage.setItem('comandas', JSON.stringify(comandas));
+        }
+
+        function loadComandas() {
+            const saved = localStorage.getItem('comandas');
+            if (saved) {
+                comandas = JSON.parse(saved);
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('cardapio', JSON.stringify(cardapio));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('cardapio');
+            if (saved) {
+                cardapio = JSON.parse(saved);
+            }
         }
 
         function showMsg(msg, type) {
@@ -248,10 +435,20 @@
             document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
             event.target.classList.add('active');
+            
+            if (tab === 'admin') {
+                renderAdminTable();
+            } else if (tab === 'caixa') {
+                renderResumo();
+            }
         }
 
-        // Carregar ao iniciar
-        loadData();
+        // Inicializar
+        loadFromLocalStorage();
+        loadComandas();
+        renderCategories();
+        renderProducts();
+        renderResumo();
     </script>
 </body>
 </html>
