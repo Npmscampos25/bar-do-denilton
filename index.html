@@ -6,33 +6,62 @@
     <title>Bar do Denilton</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; width: 100%; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
-        .header { background: #d4a574; color: white; padding: 15px; text-align: center; }
+        
+        .header { background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; }
         .header h1 { font-size: 24px; margin-bottom: 10px; }
         .header-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .header-btn { background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .header-btn { background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+        .header-btn:hover { background: rgba(255,255,255,0.3); }
         .header-btn.active { background: white; color: #8b6f47; }
-        .tab-content { display: none; padding: 20px; }
+        
+        .tab-content { display: none; padding: 20px; min-height: 100vh; }
         .tab-content.active { display: block; }
-        .section { background: white; padding: 20px; margin: 10px; border-radius: 10px; }
-        input, button { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        
+        .section { background: white; padding: 20px; margin: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        input, button, select { padding: 12px; margin: 5px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; font-family: Arial, sans-serif; }
         input { width: 100%; }
-        button { cursor: pointer; background: #d4a574; color: white; border: none; width: 100%; }
-        button:hover { background: #8b6f47; }
-        .categories, .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin: 15px 0; }
-        .category-btn, .product-btn { padding: 10px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
-        .category-btn:hover, .product-btn:hover { border-color: #d4a574; background: #f9f5f0; }
-        .category-btn.active { background: #d4a574; color: white; border-color: #d4a574; }
-        .product-price { color: #d4a574; font-weight: bold; font-size: 14px; }
-        .order-item { padding: 10px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-        .order-total { font-weight: bold; font-size: 18px; padding: 10px; border-top: 2px solid #d4a574; color: #d4a574; }
-        .order { background: #fff9f5; border: 2px solid #d4a574; border-radius: 8px; padding: 15px; margin-top: 20px; display: none; }
-        .order.show { display: block; }
-        .msg { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        input:focus, button:focus, select:focus { outline: none; border-color: #d4a574; box-shadow: 0 0 5px rgba(212, 165, 116, 0.3); }
+        
+        button { cursor: pointer; background: #d4a574; color: white; border: none; width: 100%; font-weight: bold; transition: all 0.3s; }
+        button:hover { background: #8b6f47; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 165, 116, 0.3); }
+        
+        .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 15px 0; }
+        .categories button { padding: 12px; border: 2px solid #ddd; background: white; color: #333; font-weight: bold; border-radius: 8px; margin: 0; }
+        .categories button:hover { border-color: #d4a574; background: #f9f5f0; }
+        .categories button.active { background: #d4a574; color: white; border-color: #d4a574; }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 15px 0; }
+        .product-btn { padding: 15px 10px; border: 2px solid #ddd; background: white; color: #333; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; margin: 0; }
+        .product-btn:hover { border-color: #d4a574; background: #f9f5f0; color: #333; }
+        .product-btn.active { background: #d4a574; color: white; border-color: #d4a574; }
+        .product-name { font-size: 14px; font-weight: bold; }
+        .product-price { color: #d4a574; font-weight: bold; font-size: 16px; }
+        .product-btn.active .product-price { color: white; }
+        
+        .qty-section { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
+        .qty-input { flex: 0 0 80px; margin: 0; text-align: center; }
+        .qty-section button { flex: 1; margin: 0; }
+        
+        .order { background: #fff9f5; border: 3px solid #d4a574; border-radius: 10px; padding: 20px; margin-top: 20px; display: none; }
+        .order.show { display: block; animation: slideIn 0.3s ease-in-out; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .order h3 { color: #8b6f47; margin-bottom: 15px; font-size: 18px; }
+        
+        .order-item { padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+        .order-item:last-child { border-bottom: none; }
+        .order-total { font-weight: bold; font-size: 20px; padding: 15px 0; border-top: 2px solid #d4a574; color: #d4a574; text-align: right; margin-top: 10px; }
+        
+        .btn-submit { background: #27ae60 !important; width: 100%; margin-top: 15px !important; }
+        .btn-submit:hover { background: #229954 !important; }
+        
+        .msg { padding: 15px; margin: 10px 0; border-radius: 8px; display: none; animation: fadeIn 0.3s ease-in-out; }
+        .msg.show { display: block; }
         .msg.success { background: #27ae60; color: white; }
         .msg.error { background: #ff6b6b; color: white; }
-        .btn-submit { background: #27ae60 !important; width: 100%; margin-top: 10px !important; }
-        .btn-submit:hover { background: #229954 !important; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -47,20 +76,29 @@
 
     <div id="garcom" class="tab-content active">
         <div class="section">
-            <div id="msg"></div>
-            <input type="text" id="clientName" placeholder="👤 Nome do cliente">
-            <div class="input-group">
-                <label style="display: block; font-weight: bold; margin: 10px 0 5px 0;">📂 Categoria</label>
+            <div id="msg" class="msg"></div>
+            
+            <div>
+                <label style="display: block; font-weight: bold; margin-bottom: 8px;">👤 Nome do cliente</label>
+                <input type="text" id="clientName" placeholder="Digite o nome">
+            </div>
+            
+            <div>
+                <label style="display: block; font-weight: bold; margin: 15px 0 8px 0;">📂 Categoria</label>
                 <div class="categories" id="categories"></div>
             </div>
-            <div class="input-group">
-                <label style="display: block; font-weight: bold; margin: 10px 0 5px 0;">🍔 Produto</label>
+            
+            <div>
+                <label style="display: block; font-weight: bold; margin: 15px 0 8px 0;">🍔 Produto</label>
                 <div class="products-grid" id="products"></div>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <input type="number" id="qty" value="1" min="1" style="flex: 0 0 80px; margin: 0;">
-                <button onclick="addProduct()" style="flex: 1; margin: 0;">➕ Adicionar</button>
+            
+            <div class="qty-section">
+                <label style="flex: 0 0 80px; font-weight: bold;">Qtd</label>
+                <input type="number" id="qty" value="1" min="1" class="qty-input">
+                <button onclick="addProduct()">➕ Adicionar</button>
             </div>
+            
             <div class="order" id="order">
                 <h3>📋 Comanda</h3>
                 <div id="orderItems"></div>
@@ -72,14 +110,13 @@
 
     <div id="caixa" class="tab-content">
         <div class="section">
-            <input type="text" id="searchClient" placeholder="🔍 Buscar cliente" onkeyup="searchCommands()">
-            <div id="commands"></div>
-            <div id="detail"></div>
+            <h2>💰 Caixa</h2>
+            <p style="margin-top: 10px;">Versão simplificada</p>
         </div>
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby80eS2QRPMfElLPhRhC_eLRJZfPm1qXIFx_x_q_GNO5PnlR8612EZuPuYEs-iRp-IH9Q/exec';
+        const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/export?format=csv&gid=1205665778';
         
         let cardapio = [];
         let tempOrder = [];
@@ -88,8 +125,7 @@
 
         function parsePrice(str) {
             if (!str) return 0;
-            // Remove R$, virgula, espaços
-            let clean = str.toString().replace(/R\$/g, '').replace(/,/g, '.').trim();
+            let clean = str.toString().replace(/R\$/g, '').replace(/\./g, '').replace(/,/g, '.').trim();
             let parsed = parseFloat(clean);
             return isNaN(parsed) ? 0 : parsed;
         }
@@ -97,13 +133,12 @@
         async function loadData() {
             try {
                 showMsg('Carregando...', 'success');
-                const res = await fetch(APPS_SCRIPT_URL);
+                const res = await fetch(CSV_URL);
                 const text = await res.text();
-                console.log('Raw CSV:', text.substring(0, 300));
                 
                 const lines = text.split('\n');
-                
                 cardapio = [];
+                
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
@@ -116,17 +151,14 @@
                     const preco = parsePrice(parts[2]);
                     const ativo = parts[3].trim();
                     
-                    console.log('Parseando:', produto, categoria, preco, ativo);
-                    
-                    if (produto && categoria && preco > 0 && (ativo === 'TRUE' || ativo === 'true' || ativo === 'true')) {
+                    if (produto && categoria && preco > 0 && ativo) {
                         cardapio.push({ produto, categoria, preco });
                     }
                 }
                 
-                console.log('Cardápio final:', cardapio);
                 renderCategories();
                 renderProducts();
-                showMsg('✅ Sincronizado! ' + cardapio.length + ' produtos carregados', 'success');
+                showMsg('✅ Sincronizado! ' + cardapio.length + ' produtos', 'success');
             } catch(e) {
                 console.error('Erro:', e);
                 showMsg('❌ Erro: ' + e.message, 'error');
@@ -136,12 +168,12 @@
         function renderCategories() {
             const cats = [...new Set(cardapio.map(p => p.categoria))].sort();
             const div = document.getElementById('categories');
-            div.innerHTML = cats.map(c => '<button class="category-btn" onclick="selectCat(this, ' + "'" + c + "'" + ')">' + c + '</button>').join('');
+            div.innerHTML = cats.map(c => '<button onclick="selectCat(this, ' + "'" + c + "'" + ')">' + c + '</button>').join('');
         }
 
         function selectCat(btn, cat) {
             selectedCategory = cat;
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#categories button').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             renderProducts();
         }
@@ -152,10 +184,12 @@
                 filtered = cardapio.filter(p => p.categoria === selectedCategory);
             }
             const div = document.getElementById('products');
-            div.innerHTML = filtered.map(p => '<button class="product-btn" onclick="selectProd(' + "'" + p.produto + "'" + ', ' + p.preco + ')"><div>' + p.produto + '</div><div class="product-price">R$ ' + p.preco.toFixed(2) + '</div></button>').join('');
+            div.innerHTML = filtered.map((p, idx) => '<button class="product-btn" onclick="selectProd(this, ' + "'" + p.produto + "'" + ', ' + p.preco + ')"><div class="product-name">' + p.produto + '</div><div class="product-price">R$ ' + p.preco.toFixed(2) + '</div></button>').join('');
         }
 
-        function selectProd(name, price) {
+        function selectProd(btn, name, price) {
+            document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
             selectedProduct = { name, price };
         }
 
@@ -171,21 +205,22 @@
                 qty, 
                 sub: selectedProduct.price * qty 
             });
-            showOrder(client);
+            showOrder();
             document.getElementById('qty').value = '1';
+            showMsg('✅ Produto adicionado!', 'success');
         }
 
-        function showOrder(client) {
+        function showOrder() {
             const div = document.getElementById('order');
             const items = document.getElementById('orderItems');
-            if (tempOrder.length === 0) return;
             
             let html = '';
             let total = 0;
             tempOrder.forEach((i, idx) => {
                 total += i.sub;
-                html += '<div class="order-item"><div>' + i.name + ' x' + i.qty + '</div><div>R$ ' + i.sub.toFixed(2) + '</div></div>';
+                html += '<div class="order-item"><div><strong>' + i.name + '</strong> <span style="color: #999;">x' + i.qty + '</span></div><div style="color: #d4a574; font-weight: bold;">R$ ' + i.sub.toFixed(2) + '</div></div>';
             });
+            
             items.innerHTML = html;
             document.getElementById('total').textContent = total.toFixed(2);
             div.classList.add('show');
@@ -198,18 +233,14 @@
             tempOrder = [];
             document.getElementById('order').classList.remove('show');
             document.getElementById('clientName').value = '';
-        }
-
-        function searchCommands() {
-            const div = document.getElementById('commands');
-            div.innerHTML = '<p>Versão simplificada - sem histórico</p>';
+            document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
         }
 
         function showMsg(msg, type) {
             const div = document.getElementById('msg');
-            div.className = 'msg ' + type;
+            div.className = 'msg show ' + type;
             div.textContent = msg;
-            setTimeout(() => { div.className = 'msg'; div.textContent = ''; }, 3000);
+            setTimeout(() => { div.classList.remove('show'); }, 3000);
         }
 
         function switchTab(tab) {
