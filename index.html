@@ -481,7 +481,7 @@
         </div>
     </div>
 
-    <div id="senhaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+    <div id="senhaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
         <div class="senha-container">
             <h2>🔐 Acesso Admin</h2>
             <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter') validarSenha()">
@@ -649,3 +649,225 @@
 
         function selectProd(btn, name, price) {
             document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedProduct = { name, price };
+        }
+
+        function addProduct() {
+            const client = document.getElementById('clientName').value.trim();
+            if (!client) { showMsg('❌ Aí não! Falta o nome', 'error'); return; }
+            if (!selectedProduct) { showMsg('❌ Escolhe algo aí!', 'error'); return; }
+            
+            const qty = parseInt(document.getElementById('qty').value) || 1;
+            tempOrder.push({ 
+                name: selectedProduct.name, 
+                price: selectedProduct.price, 
+                qty, 
+                sub: selectedProduct.price * qty 
+            });
+            showOrder();
+            document.getElementById('qty').value = '1';
+            showMsg('✅ Bora! Tá na comanda', 'success');
+        }
+
+        function showOrder() {
+            const div = document.getElementById('order');
+            const items = document.getElementById('orderItems');
+            
+            let html = '';
+            let total = 0;
+            tempOrder.forEach((i, idx) => {
+                total += i.sub;
+                html += '<div class="order-item"><div><strong>' + i.name + '</strong> <span style="color: #999;">x' + i.qty + '</span></div><div style="color: #d4a574; font-weight: bold;">R$ ' + i.sub.toFixed(2) + '</div></div>';
+            });
+            
+            items.innerHTML = html;
+            document.getElementById('total').textContent = total.toFixed(2);
+            div.classList.add('show');
+        }
+
+        function submitOrder() {
+            const client = document.getElementById('clientName').value.trim();
+            if (!client || tempOrder.length === 0) { showMsg('❌ Deu ruim', 'error'); return; }
+            
+            let total = 0;
+            tempOrder.forEach(i => total += i.sub);
+            
+            comandas.push({
+                id: Date.now(),
+                cliente: client,
+                items: [...tempOrder],
+                total: total,
+                status: 'Aberto',
+                data: new Date().toLocaleString('pt-BR')
+            });
+            
+            saveComandas();
+            showMsg('✅ Comanda fechada! Boa pedida', 'success');
+            tempOrder = [];
+            document.getElementById('order').classList.remove('show');
+            document.getElementById('clientName').value = '';
+            document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
+        }
+
+        function searchAndShowComanda() {
+            const search = document.getElementById('searchClient').value.toLowerCase().trim();
+            const div = document.getElementById('comandaDetail');
+            
+            if (!search) {
+                div.innerHTML = '';
+                renderResumo();
+                return;
+            }
+            
+            const clientComandas = comandas.filter(c => c.status === 'Aberto' && c.cliente.toLowerCase() === search);
+            
+            if (clientComandas.length === 0) {
+                div.innerHTML = '<p style="text-align: center; color: #999; margin: 20px 0; font-size: 15px;">Esse tá em dia!</p>';
+                renderResumo();
+                return;
+            }
+            
+            let totalGeral = 0;
+            let htmlItens = '<table class="caixa-table"><thead><tr><th>Produto</th><th>Preço</th><th>Qtd</th><th>Subtotal</th></tr></thead><tbody>';
+            
+            clientComandas.forEach(comanda => {
+                comanda.items.forEach(item => {
+                    htmlItens += '<tr><td>' + item.name + '</td><td>R$ ' + item.price.toFixed(2) + '</td><td>' + item.qty + '</td><td>R$ ' + item.sub.toFixed(2) + '</td></tr>';
+                    totalGeral += item.sub;
+                });
+            });
+            
+            htmlItens += '</tbody></table>';
+            
+            let html = '<div class="info-box"><h3>🛒 Pediu isso:</h3>' + htmlItens + '</div>';
+            html += '<div class="info-box"><h3>💸 Tá devendo:</h3><div class="value">R$ ' + totalGeral.toFixed(2) + '</div>';
+            html += '<button class="btn-pagar" onclick="markAsPaid(' + "'" + search + "'" + ')" style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important; margin-top: 15px; font-size: 16px;">✅ Pagou! Aprovado</button></div>';
+            
+            div.innerHTML = html;
+            renderResumo();
+        }
+
+        function markAsPaid(clientName) {
+            comandas.forEach(c => {
+                if (c.status === 'Aberto' && c.cliente.toLowerCase() === clientName.toLowerCase()) {
+                    c.status = 'Pago';
+                }
+            });
+            
+            saveComandas();
+            showMsg('✅ Tranquilão! Fechado', 'success');
+            document.getElementById('searchClient').value = '';
+            document.getElementById('comandaDetail').innerHTML = '';
+            renderResumo();
+        }
+
+        function renderResumo() {
+            const tbody = document.getElementById('resumoTable');
+            const abertos = comandas.filter(c => c.status === 'Aberto');
+            
+            const resumo = {};
+            abertos.forEach(c => {
+                if (!resumo[c.cliente]) {
+                    resumo[c.cliente] = 0;
+                }
+                resumo[c.cliente] += c.total;
+            });
+            
+            if (Object.keys(resumo).length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #999;">Tá tudo em dia! 🎉</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = Object.entries(resumo).map(([cliente, total]) => `
+                <tr>
+                    <td>${cliente}</td>
+                    <td>R$ ${total.toFixed(2)}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTable');
+            tbody.innerHTML = cardapio.map((p, idx) => `
+                <tr>
+                    <td><input type="text" value="${p.produto}" onchange="updateProduct(${idx}, 'produto', this.value)"></td>
+                    <td><input type="text" value="${p.categoria}" onchange="updateProduct(${idx}, 'categoria', this.value)"></td>
+                    <td><input type="number" step="0.01" value="${p.preco}" onchange="updateProduct(${idx}, 'preco', parseFloat(this.value))"></td>
+                    <td><button class="btn-remove" onclick="removeProduct(${idx})">❌ Tira</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function updateProduct(idx, field, value) {
+            cardapio[idx][field] = value;
+            saveToLocalStorage();
+            renderCategories();
+            renderProducts();
+        }
+
+        function removeProduct(idx) {
+            cardapio.splice(idx, 1);
+            saveToLocalStorage();
+            renderAdminTable();
+            renderCategories();
+            renderProducts();
+        }
+
+        function addNewProduct() {
+            cardapio.push({ produto: 'Novo Produto', categoria: 'Bebidas', preco: 0.00 });
+            saveToLocalStorage();
+            renderAdminTable();
+        }
+
+        function saveComandas() {
+            localStorage.setItem('comandas', JSON.stringify(comandas));
+        }
+
+        function loadComandas() {
+            const saved = localStorage.getItem('comandas');
+            if (saved) {
+                comandas = JSON.parse(saved);
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('cardapio', JSON.stringify(cardapio));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('cardapio');
+            if (saved) {
+                cardapio = JSON.parse(saved);
+            }
+        }
+
+        function showMsg(msg, type) {
+            const div = document.getElementById('msg');
+            div.className = 'msg show ' + type;
+            div.textContent = msg;
+            setTimeout(() => { div.classList.remove('show'); }, 3000);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            document.querySelector('[onclick*="' + tab + '"]').classList.add('active');
+            
+            if (tab === 'admin') {
+                renderAdminTable();
+            } else if (tab === 'caixa') {
+                renderResumo();
+            }
+        }
+
+        // Inicializar
+        loadFromLocalStorage();
+        loadComandas();
+        renderCategories();
+        renderProducts();
+        renderResumo();
+    </script>
+</body>
+</html>
