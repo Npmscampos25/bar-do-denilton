@@ -7,131 +7,521 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body { height: 100%; width: 100%; }
-        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        body { 
+            font-family: 'Comic Sans MS', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #333;
+        }
         
-        .header { background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%); color: white; padding: 15px; text-align: center; position: sticky; top: 0; z-index: 100; }
-        .header h1 { font-size: 24px; margin-bottom: 10px; }
-        .header-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .header-btn { background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        .header-btn:hover { background: rgba(255,255,255,0.3); }
-        .header-btn.active { background: white; color: #8b6f47; }
+        .header { 
+            background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
+            color: #1a1a1a;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 15px rgba(212, 165, 116, 0.4);
+        }
         
-        .tab-content { display: none; padding: 20px; min-height: 100vh; }
-        .tab-content.active { display: block; }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
         
-        .section { background: white; padding: 20px; margin: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .header-emoji { font-size: 48px; }
         
-        input, button, select { padding: 12px; margin: 5px 0; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; font-family: Arial, sans-serif; }
+        .header h1 { 
+            font-size: 32px;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+            font-weight: 900;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-buttons { 
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .header-btn { 
+            background: rgba(255,255,255,0.3);
+            border: 3px solid white;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        
+        .header-btn:hover { 
+            background: white;
+            color: #8b6f47;
+            transform: scale(1.05);
+        }
+        
+        .header-btn.active { 
+            background: white;
+            color: #8b6f47;
+            font-weight: 900;
+        }
+        
+        .tab-content { 
+            display: none;
+            padding: 20px;
+            min-height: calc(100vh - 220px);
+            background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+        }
+        
+        .tab-content.active { 
+            display: block;
+        }
+        
+        .section { 
+            background: white;
+            padding: 25px;
+            margin: 15px auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            max-width: 1000px;
+            border: 3px solid #d4a574;
+            position: relative;
+        }
+        
+        .section::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: 20px;
+            width: 20px;
+            height: 20px;
+            background: #d4a574;
+            border-radius: 50%;
+            box-shadow: 40px 0 0 #d4a574, 80px 0 0 #d4a574;
+        }
+        
+        .section h2 {
+            color: #8b6f47;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 900;
+        }
+        
+        input, button, select { 
+            padding: 12px;
+            margin: 5px 0;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Segoe UI', sans-serif;
+            transition: all 0.3s;
+        }
+        
         input { width: 100%; }
-        input:focus, button:focus, select:focus { outline: none; border-color: #d4a574; box-shadow: 0 0 5px rgba(212, 165, 116, 0.3); }
+        input:focus, button:focus, select:focus { 
+            outline: none;
+            border-color: #d4a574;
+            box-shadow: 0 0 10px rgba(212, 165, 116, 0.5);
+            transform: scale(1.02);
+        }
         
-        button { cursor: pointer; background: #d4a574; color: white; border: none; width: 100%; font-weight: bold; transition: all 0.3s; }
-        button:hover { background: #8b6f47; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(212, 165, 116, 0.3); }
+        button { 
+            cursor: pointer;
+            background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
+            color: white;
+            border: none;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
         
-        .categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 15px 0; }
-        .categories button { padding: 12px; border: 2px solid #ddd; background: white; color: #333; font-weight: bold; border-radius: 8px; margin: 0; }
-        .categories button:hover { border-color: #d4a574; background: #f9f5f0; }
-        .categories button.active { background: #d4a574; color: white; border-color: #d4a574; }
+        button:hover { 
+            background: linear-gradient(135deg, #8b6f47 0%, #6b5635 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
         
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin: 15px 0; }
-        .product-btn { padding: 15px 10px; border: 2px solid #ddd; background: white; color: #333; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px; margin: 0; }
-        .product-btn:hover { border-color: #d4a574; background: #f9f5f0; color: #333; }
-        .product-btn.active { background: #d4a574; color: white; border-color: #d4a574; }
+        button:active { transform: translateY(-1px); }
+        
+        .categories { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 12px;
+            margin: 15px 0;
+        }
+        
+        .categories button { 
+            padding: 12px;
+            border: 3px dashed #d4a574;
+            background: white;
+            color: #8b6f47;
+            font-weight: bold;
+            border-radius: 15px;
+            margin: 0;
+            width: 100%;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .categories button:hover { 
+            border-style: solid;
+            background: #f9f5f0;
+            transform: rotate(2deg);
+        }
+        
+        .categories button.active { 
+            background: #d4a574;
+            color: white;
+            border-style: solid;
+            transform: rotate(0deg) scale(1.05);
+        }
+        
+        .products-grid { 
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .product-btn { 
+            padding: 15px 10px;
+            border: 3px solid #d4a574;
+            background: white;
+            color: #333;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .product-btn:hover { 
+            border-color: #8b6f47;
+            background: #f9f5f0;
+            transform: translateY(-5px) rotate(-1deg);
+            box-shadow: 0 8px 15px rgba(212, 165, 116, 0.3);
+        }
+        
+        .product-btn.active { 
+            background: #d4a574;
+            color: white;
+            border-color: #8b6f47;
+            transform: rotate(0deg) scale(1.08);
+            box-shadow: 0 6px 20px rgba(212, 165, 116, 0.4);
+        }
+        
         .product-name { font-size: 14px; font-weight: bold; }
-        .product-price { color: #d4a574; font-weight: bold; font-size: 16px; }
+        .product-price { color: #d4a574; font-weight: bold; font-size: 18px; }
         .product-btn.active .product-price { color: white; }
         
-        .qty-section { display: flex; gap: 10px; margin-top: 20px; align-items: center; }
-        .qty-input { flex: 0 0 80px; margin: 0; text-align: center; }
+        .qty-section { 
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            align-items: center;
+        }
+        
+        .qty-input { 
+            flex: 0 0 80px;
+            margin: 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
         .qty-section button { flex: 1; margin: 0; }
         
-        .order { background: #fff9f5; border: 3px solid #d4a574; border-radius: 10px; padding: 20px; margin-top: 20px; display: none; }
-        .order.show { display: block; animation: slideIn 0.3s ease-in-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .order h3 { color: #8b6f47; margin-bottom: 15px; font-size: 18px; }
+        .order { 
+            background: linear-gradient(135deg, #fff9f5 0%, #fff5ed 100%);
+            border: 4px dashed #d4a574;
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 25px;
+            display: none;
+            box-shadow: 0 8px 20px rgba(212, 165, 116, 0.3);
+            position: relative;
+        }
         
-        .order-item { padding: 10px 0; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
-        .order-item:last-child { border-bottom: none; }
-        .order-total { font-weight: bold; font-size: 20px; padding: 15px 0; border-top: 2px solid #d4a574; color: #d4a574; text-align: right; margin-top: 10px; }
+        .order::before {
+            content: '🍽️';
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            font-size: 40px;
+        }
         
-        .btn-submit { background: #27ae60 !important; width: 100%; margin-top: 15px !important; }
-        .btn-submit:hover { background: #229954 !important; }
+        .order.show { 
+            display: block;
+            animation: slideIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
         
-        .msg { padding: 15px; margin: 10px 0; border-radius: 8px; display: none; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes slideIn { 
+            from { 
+                opacity: 0;
+                transform: translateY(30px) rotateX(90deg);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) rotateX(0);
+            }
+        }
+        
+        .order h3 { 
+            color: #8b6f47;
+            margin: 20px 0 15px 0;
+            font-size: 22px;
+            font-weight: 900;
+        }
+        
+        .order-item { 
+            padding: 12px;
+            border-bottom: 2px dotted #d4a574;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .order-item:last-child { 
+            border-bottom: none;
+        }
+        
+        .order-total { 
+            font-weight: 900;
+            font-size: 24px;
+            padding: 20px;
+            border-top: 3px dashed #d4a574;
+            color: #d4a574;
+            text-align: right;
+            margin-top: 15px;
+            background: white;
+            border-radius: 10px;
+        }
+        
+        .btn-submit { 
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important;
+            width: 100%;
+            margin-top: 15px !important;
+            font-size: 18px !important;
+        }
+        
+        .btn-submit:hover { 
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%) !important;
+        }
+        
+        .msg { 
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 12px;
+            display: none;
+            animation: popIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            font-weight: bold;
+            font-size: 15px;
+        }
+        
         .msg.show { display: block; }
-        .msg.success { background: #27ae60; color: white; }
-        .msg.error { background: #ff6b6b; color: white; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .msg.success { 
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            color: #155724;
+            border: 2px solid #27ae60;
+        }
+        .msg.error { 
+            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+            color: #721c24;
+            border: 2px solid #ff6b6b;
+        }
         
-        .admin-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .admin-table th, .admin-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .admin-table th { background: #d4a574; color: white; font-weight: bold; }
+        @keyframes popIn { 
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        .admin-table, .caixa-table, .resumo-table { 
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .admin-table th, .caixa-table th, .resumo-table th { 
+            background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%);
+            color: white;
+            font-weight: bold;
+            padding: 12px;
+            text-align: left;
+            font-size: 15px;
+        }
+        
+        .admin-table td, .caixa-table td, .resumo-table td { 
+            border: 2px solid #d4a574;
+            padding: 12px;
+        }
+        
         .admin-table input { width: 100%; margin: 0; }
-        .btn-add { background: #27ae60 !important; margin-top: 10px; }
-        .btn-remove { background: #ff6b6b !important; width: 100%; margin: 0; padding: 8px; }
+        .admin-table tr:nth-child(even) { background: #f9f5f0; }
+        .admin-table tr:hover { background: #fff5ed; }
         
-        .caixa-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .caixa-table th, .caixa-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .caixa-table th { background: #27ae60; color: white; font-weight: bold; }
-        .caixa-table tr:nth-child(even) { background: #f9f9f9; }
+        .btn-add { 
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%) !important;
+            margin-top: 15px;
+            font-size: 16px;
+        }
         
-        .resumo-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        .resumo-table th, .resumo-table td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-        .resumo-table th { background: #4a90e2; color: white; font-weight: bold; }
-        .resumo-table tr:nth-child(even) { background: #f0f7ff; }
-        .resumo-table td:last-child { text-align: right; font-weight: bold; color: #d4a574; }
+        .btn-remove { 
+            background: linear-gradient(135deg, #ff6b6b 0%, #e74c3c 100%) !important;
+            width: 100%;
+            margin: 0;
+            padding: 8px;
+            font-size: 13px;
+        }
         
-        .search-section { background: #fff9f5; border: 2px solid #d4a574; border-radius: 8px; padding: 15px; margin-bottom: 20px; }
-        .search-section label { display: block; font-weight: bold; margin-bottom: 8px; }
+        .search-section { 
+            background: linear-gradient(135deg, #fff9f5 0%, #f9f5f0 100%);
+            border: 3px dashed #d4a574;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
         
-        .info-box { background: #f0f7ff; border-left: 4px solid #4a90e2; padding: 15px; margin: 15px 0; }
-        .info-box h3 { color: #4a90e2; margin-bottom: 10px; }
-        .info-box .value { font-size: 24px; font-weight: bold; color: #d4a574; }
+        .search-section label { 
+            display: block;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #8b6f47;
+            font-size: 16px;
+        }
         
-        .btn-pagar { background: #27ae60 !important; margin-top: 10px; }
-        .btn-pagar:hover { background: #229954 !important; }
+        .info-box { 
+            background: linear-gradient(135deg, #f0f7ff 0%, #e3f2fd 100%);
+            border-left: 5px solid #d4a574;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(212, 165, 116, 0.2);
+        }
+        
+        .info-box h3 { 
+            color: #8b6f47;
+            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 900;
+        }
+        
+        .info-box .value { 
+            font-size: 32px;
+            font-weight: 900;
+            color: #d4a574;
+        }
+        
+        .senha-container { 
+            max-width: 400px;
+            margin: 80px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border: 4px solid #d4a574;
+        }
+        
+        .senha-container h2 { 
+            color: #8b6f47;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+        }
+        
+        .senha-container input { 
+            margin-bottom: 20px;
+            border: 2px solid #d4a574;
+        }
+        .senha-container button { margin-bottom: 10px; }
+        .senha-error { 
+            color: #ff6b6b;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        label { color: #8b6f47; font-weight: bold; }
     </style>
 </head>
 <body>
     <div class="header">
-        <h1>🍺 Bar do Denilton</h1>
+        <div class="header-logo">
+            <div class="header-emoji">🍺</div>
+        </div>
+        <h1>🍺 BAR DO DENILTON 🍺</h1>
         <div class="header-buttons">
             <button class="header-btn active" onclick="switchTab('garcom')">🍽️ Garçom</button>
             <button class="header-btn" onclick="switchTab('caixa')">💰 Caixa</button>
-            <button class="header-btn" onclick="switchTab('admin')">⚙️ Admin</button>
+            <button class="header-btn" id="adminBtn" onclick="tryOpenAdmin()">⚙️ Admin</button>
+        </div>
+    </div>
+
+    <div id="senhaModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; display: flex; align-items: center; justify-content: center;">
+        <div class="senha-container">
+            <h2>🔐 Acesso Admin</h2>
+            <input type="password" id="senhaInput" placeholder="Digite a senha" onkeypress="if(event.key==='Enter') validarSenha()">
+            <button onclick="validarSenha()">Entrar 🚪</button>
+            <button onclick="fecharSenha()" style="background: linear-gradient(135deg, #999 0%, #777 100%);">Cancelar</button>
+            <div class="senha-error" id="senhaError"></div>
         </div>
     </div>
 
     <div id="garcom" class="tab-content active">
         <div class="section">
+            <h2>🍽️ Novo Pedido</h2>
             <div id="msg" class="msg"></div>
             
             <div>
-                <label style="display: block; font-weight: bold; margin-bottom: 8px;">👤 Nome do cliente</label>
-                <input type="text" id="clientName" placeholder="Digite o nome">
+                <label style="display: block; margin-bottom: 8px;">👤 Quem tá pedindo?</label>
+                <input type="text" id="clientName" placeholder="Nome do cliente">
             </div>
             
             <div>
-                <label style="display: block; font-weight: bold; margin: 15px 0 8px 0;">📂 Categoria</label>
+                <label style="display: block; margin: 15px 0 8px 0;">📂 O que quer?</label>
                 <div class="categories" id="categories"></div>
             </div>
             
             <div>
-                <label style="display: block; font-weight: bold; margin: 15px 0 8px 0;">🍔 Produto</label>
+                <label style="display: block; margin: 15px 0 8px 0;">🍔 Escolhe aí!</label>
                 <div class="products-grid" id="products"></div>
             </div>
             
             <div class="qty-section">
-                <label style="flex: 0 0 80px; font-weight: bold;">Qtd</label>
+                <label style="flex: 0 0 80px;">Qtd</label>
                 <input type="number" id="qty" value="1" min="1" class="qty-input">
-                <button onclick="addProduct()">➕ Adicionar</button>
+                <button onclick="addProduct()">➕ Bora!</button>
             </div>
             
             <div class="order" id="order">
-                <h3>📋 Comanda</h3>
+                <h3>📋 Sua Comanda</h3>
                 <div id="orderItems"></div>
                 <div class="order-total">Total: R$ <span id="total">0.00</span></div>
-                <button class="btn-submit" onclick="submitOrder()">✅ Finalizar Comanda</button>
+                <button class="btn-submit" onclick="submitOrder()">✅ Fecha a Comanda!</button>
             </div>
         </div>
     </div>
@@ -141,13 +531,13 @@
             <h2>💰 Caixa</h2>
             
             <div class="search-section">
-                <label>🔍 PESQUISAR CLIENTE:</label>
-                <input type="text" id="searchClient" placeholder="Digite o nome do cliente" onkeyup="searchAndShowComanda()">
+                <label>🔍 Procura aí:</label>
+                <input type="text" id="searchClient" placeholder="Nome do cliente" onkeyup="searchAndShowComanda()">
             </div>
             
             <div id="comandaDetail"></div>
             
-            <h3 style="margin-top: 30px; color: #4a90e2;">📋 COMANDAS ABERTAS AGORA:</h3>
+            <h3 style="margin-top: 30px; color: #8b6f47; font-size: 20px; font-weight: 900;">📊 Quem tá devendo agora:</h3>
             <table class="resumo-table">
                 <thead>
                     <tr>
@@ -162,8 +552,8 @@
 
     <div id="admin" class="tab-content">
         <div class="section">
-            <h2>⚙️ Administração do Cardápio</h2>
-            <p style="margin: 10px 0;">Adicione, edite ou remova produtos abaixo:</p>
+            <h2>⚙️ Mexer no Cardápio</h2>
+            <p style="margin: 10px 0; color: #666; font-size: 15px;">Adiciona, edita ou tira os produtos:</p>
             
             <table class="admin-table">
                 <thead>
@@ -177,11 +567,14 @@
                 <tbody id="adminTable"></tbody>
             </table>
             
-            <button class="btn-add" onclick="addNewProduct()">➕ Adicionar Novo Produto</button>
+            <button class="btn-add" onclick="addNewProduct()">➕ Novo Produto</button>
         </div>
     </div>
 
     <script>
+        const ADMIN_PASSWORD = 'admin123';
+        let adminUnlocked = false;
+
         let cardapio = [
             { produto: 'Cerveja Brahma', categoria: 'Bebidas', preco: 9.00 },
             { produto: 'Coca-Cola', categoria: 'Bebidas', preco: 6.00 },
@@ -204,7 +597,33 @@
         let tempOrder = [];
         let selectedProduct = null;
         let selectedCategory = null;
-        let selectedComandaId = null;
+
+        function tryOpenAdmin() {
+            if (!adminUnlocked) {
+                document.getElementById('senhaModal').style.display = 'flex';
+                document.getElementById('senhaInput').focus();
+            } else {
+                switchTab('admin');
+            }
+        }
+
+        function validarSenha() {
+            const senha = document.getElementById('senhaInput').value;
+            if (senha === ADMIN_PASSWORD) {
+                adminUnlocked = true;
+                fecharSenha();
+                switchTab('admin');
+            } else {
+                document.getElementById('senhaError').textContent = '❌ Errado! Tenta de novo';
+                document.getElementById('senhaInput').value = '';
+            }
+        }
+
+        function fecharSenha() {
+            document.getElementById('senhaModal').style.display = 'none';
+            document.getElementById('senhaInput').value = '';
+            document.getElementById('senhaError').textContent = '';
+        }
 
         function renderCategories() {
             const cats = [...new Set(cardapio.map(p => p.categoria))].sort();
@@ -230,225 +649,3 @@
 
         function selectProd(btn, name, price) {
             document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            selectedProduct = { name, price };
-        }
-
-        function addProduct() {
-            const client = document.getElementById('clientName').value.trim();
-            if (!client) { showMsg('❌ Digite o nome do cliente', 'error'); return; }
-            if (!selectedProduct) { showMsg('❌ Selecione um produto', 'error'); return; }
-            
-            const qty = parseInt(document.getElementById('qty').value) || 1;
-            tempOrder.push({ 
-                name: selectedProduct.name, 
-                price: selectedProduct.price, 
-                qty, 
-                sub: selectedProduct.price * qty 
-            });
-            showOrder();
-            document.getElementById('qty').value = '1';
-            showMsg('✅ Produto adicionado!', 'success');
-        }
-
-        function showOrder() {
-            const div = document.getElementById('order');
-            const items = document.getElementById('orderItems');
-            
-            let html = '';
-            let total = 0;
-            tempOrder.forEach((i, idx) => {
-                total += i.sub;
-                html += '<div class="order-item"><div><strong>' + i.name + '</strong> <span style="color: #999;">x' + i.qty + '</span></div><div style="color: #d4a574; font-weight: bold;">R$ ' + i.sub.toFixed(2) + '</div></div>';
-            });
-            
-            items.innerHTML = html;
-            document.getElementById('total').textContent = total.toFixed(2);
-            div.classList.add('show');
-        }
-
-        function submitOrder() {
-            const client = document.getElementById('clientName').value.trim();
-            if (!client || tempOrder.length === 0) { showMsg('❌ Erro', 'error'); return; }
-            
-            let total = 0;
-            tempOrder.forEach(i => total += i.sub);
-            
-            comandas.push({
-                id: Date.now(),
-                cliente: client,
-                items: [...tempOrder],
-                total: total,
-                status: 'Aberto',
-                data: new Date().toLocaleString('pt-BR')
-            });
-            
-            saveComandas();
-            showMsg('✅ Comanda enviada com sucesso!', 'success');
-            tempOrder = [];
-            document.getElementById('order').classList.remove('show');
-            document.getElementById('clientName').value = '';
-            document.querySelectorAll('.product-btn').forEach(b => b.classList.remove('active'));
-        }
-
-        function searchAndShowComanda() {
-            const search = document.getElementById('searchClient').value.toLowerCase().trim();
-            const div = document.getElementById('comandaDetail');
-            
-            if (!search) {
-                div.innerHTML = '';
-                renderResumo();
-                return;
-            }
-            
-            const clientComandas = comandas.filter(c => c.status === 'Aberto' && c.cliente.toLowerCase() === search);
-            
-            if (clientComandas.length === 0) {
-                div.innerHTML = '<p style="text-align: center; color: #999; margin: 20px 0;">Nenhuma comanda aberta para este cliente</p>';
-                renderResumo();
-                return;
-            }
-            
-            let totalGeral = 0;
-            let htmlItens = '<table class="caixa-table"><thead><tr><th>Produto</th><th>Preço Unit</th><th>Qtd</th><th>Subtotal</th></tr></thead><tbody>';
-            
-            clientComandas.forEach(comanda => {
-                comanda.items.forEach(item => {
-                    htmlItens += '<tr><td>' + item.name + '</td><td>R$ ' + item.price.toFixed(2) + '</td><td>' + item.qty + '</td><td>R$ ' + item.sub.toFixed(2) + '</td></tr>';
-                    totalGeral += item.sub;
-                });
-            });
-            
-            htmlItens += '</tbody></table>';
-            
-            let html = '<div class="info-box"><h3>ITENS DA COMANDA:</h3>' + htmlItens + '</div>';
-            html += '<div class="info-box"><h3>TOTAL A PAGAR:</h3><div class="value">R$ ' + totalGeral.toFixed(2) + '</div>';
-            html += '<button class="btn-pagar" onclick="markAsPaid(' + "'" + search + "'" + ')">✅ Marcar como PAGO</button></div>';
-            
-            div.innerHTML = html;
-            renderResumo();
-        }
-
-        function markAsPaid(clientName) {
-            comandas.forEach(c => {
-                if (c.status === 'Aberto' && c.cliente.toLowerCase() === clientName.toLowerCase()) {
-                    c.status = 'Pago';
-                }
-            });
-            
-            saveComandas();
-            showMsg('✅ Comanda marcada como PAGO!', 'success');
-            document.getElementById('searchClient').value = '';
-            document.getElementById('comandaDetail').innerHTML = '';
-            renderResumo();
-        }
-
-        function renderResumo() {
-            const tbody = document.getElementById('resumoTable');
-            const abertos = comandas.filter(c => c.status === 'Aberto');
-            
-            const resumo = {};
-            abertos.forEach(c => {
-                if (!resumo[c.cliente]) {
-                    resumo[c.cliente] = 0;
-                }
-                resumo[c.cliente] += c.total;
-            });
-            
-            if (Object.keys(resumo).length === 0) {
-                tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: #999;">Nenhuma comanda aberta</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = Object.entries(resumo).map(([cliente, total]) => `
-                <tr>
-                    <td>${cliente}</td>
-                    <td>R$ ${total.toFixed(2)}</td>
-                </tr>
-            `).join('');
-        }
-
-        function renderAdminTable() {
-            const tbody = document.getElementById('adminTable');
-            tbody.innerHTML = cardapio.map((p, idx) => `
-                <tr>
-                    <td><input type="text" value="${p.produto}" onchange="updateProduct(${idx}, 'produto', this.value)"></td>
-                    <td><input type="text" value="${p.categoria}" onchange="updateProduct(${idx}, 'categoria', this.value)"></td>
-                    <td><input type="number" step="0.01" value="${p.preco}" onchange="updateProduct(${idx}, 'preco', parseFloat(this.value))"></td>
-                    <td><button class="btn-remove" onclick="removeProduct(${idx})">❌ Remover</button></td>
-                </tr>
-            `).join('');
-        }
-
-        function updateProduct(idx, field, value) {
-            cardapio[idx][field] = value;
-            saveToLocalStorage();
-            renderCategories();
-            renderProducts();
-        }
-
-        function removeProduct(idx) {
-            cardapio.splice(idx, 1);
-            saveToLocalStorage();
-            renderAdminTable();
-            renderCategories();
-            renderProducts();
-        }
-
-        function addNewProduct() {
-            cardapio.push({ produto: 'Novo Produto', categoria: 'Bebidas', preco: 0.00 });
-            saveToLocalStorage();
-            renderAdminTable();
-        }
-
-        function saveComandas() {
-            localStorage.setItem('comandas', JSON.stringify(comandas));
-        }
-
-        function loadComandas() {
-            const saved = localStorage.getItem('comandas');
-            if (saved) {
-                comandas = JSON.parse(saved);
-            }
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('cardapio', JSON.stringify(cardapio));
-        }
-
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('cardapio');
-            if (saved) {
-                cardapio = JSON.parse(saved);
-            }
-        }
-
-        function showMsg(msg, type) {
-            const div = document.getElementById('msg');
-            div.className = 'msg show ' + type;
-            div.textContent = msg;
-            setTimeout(() => { div.classList.remove('show'); }, 3000);
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(tab).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (tab === 'admin') {
-                renderAdminTable();
-            } else if (tab === 'caixa') {
-                renderResumo();
-            }
-        }
-
-        // Inicializar
-        loadFromLocalStorage();
-        loadComandas();
-        renderCategories();
-        renderProducts();
-        renderResumo();
-    </script>
-</body>
-</html>
