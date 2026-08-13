@@ -6,268 +6,142 @@
     <title>Bar do Denilton</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; }
-        .header { background: linear-gradient(135deg, #d4a574 0%, #8b6f47 100%); color: white; padding: 15px; text-align: center; }
-        .header h1 { font-size: 24px; margin-bottom: 10px; }
-        .header-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
-        .header-btn { background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        .header-btn.active { background: white; color: #8b6f47; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .header { background: #d4a574; color: white; padding: 15px; text-align: center; }
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
         .section { background: white; padding: 20px; margin: 10px; border-radius: 10px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; }
-        input, select { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
-        input:focus, select:focus { outline: none; border-color: #d4a574; }
-        .categories, .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin: 15px 0; }
-        button { padding: 10px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
-        button:hover { border-color: #d4a574; background: #f9f5f0; }
-        button.active { background: #d4a574; color: white; border-color: #d4a574; }
-        .product-price { color: #d4a574; font-weight: bold; font-size: 14px; }
-        .btn-primary { width: 100%; padding: 15px; background: #d4a574; color: white; border: none; font-size: 16px; margin-top: 10px; }
-        .btn-primary:hover { background: #8b6f47; }
-        .order { background: #fff9f5; border: 2px solid #d4a574; border-radius: 8px; padding: 15px; margin-top: 20px; display: none; }
-        .order.show { display: block; }
-        .order-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #ddd; }
-        .order-total { font-size: 18px; font-weight: bold; color: #d4a574; text-align: right; margin-top: 10px; padding-top: 10px; border-top: 2px solid #d4a574; }
-        .message { padding: 15px; border-radius: 8px; margin: 10px 0; }
-        .success { background: #27ae60; color: white; }
-        .error { background: #ff6b6b; color: white; }
-        .command-item { padding: 15px; background: white; border: 1px solid #ddd; margin: 10px 0; cursor: pointer; border-radius: 8px; display: flex; justify-content: space-between; }
-        .command-item:hover { background: #f9f5f0; }
-        .detail { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; display: none; }
-        .detail.show { display: block; }
+        input, button { padding: 10px; margin: 5px 0; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        input { width: 100%; }
+        button { cursor: pointer; background: #d4a574; color: white; border: none; width: 100%; }
+        button:hover { background: #8b6f47; }
+        .category-btn, .product-btn { width: 100%; margin: 5px 0; padding: 10px; }
+        .category-btn.active { background: #d4a574; color: white; }
+        .order-item { padding: 10px; border-bottom: 1px solid #ddd; }
+        .order-total { font-weight: bold; font-size: 18px; padding: 10px; }
+        .command-item { padding: 10px; background: #f9f9f9; margin: 5px 0; cursor: pointer; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🍺 Bar do Denilton</h1>
-        <div class="header-buttons">
-            <button class="header-btn active" onclick="switchTab('garcom')">🍽️ Garçom</button>
-            <button class="header-btn" onclick="switchTab('caixa')">💰 Caixa</button>
-            <button class="header-btn" onclick="loadData()">🔄 Sincronizar</button>
-        </div>
+        <button onclick="switchTab('garcom')">Garçom</button>
+        <button onclick="switchTab('caixa')">Caixa</button>
+        <button onclick="loadData()">Sincronizar</button>
     </div>
 
     <div id="garcom" class="tab-content active">
         <div class="section">
-            <div id="msg-garcom"></div>
-            <div class="input-group">
-                <label>👤 Nome do Cliente</label>
-                <input type="text" id="clientName" placeholder="Digite o nome">
-            </div>
-            <div class="input-group">
-                <label>📂 Categoria</label>
-                <div class="categories" id="categories"></div>
-            </div>
-            <div class="input-group">
-                <label>🍔 Produto</label>
-                <div class="products-grid" id="products"></div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <input type="number" id="qty" value="1" min="1" style="flex: 0 0 80px;">
-                <button class="btn-primary" onclick="addProduct()" style="margin: 0;">➕ Adicionar</button>
-            </div>
-            <div class="order" id="order">
-                <h3>📋 Comanda</h3>
-                <div id="orderItems"></div>
-                <div class="order-total">Total: R$ <span id="total">0.00</span></div>
-                <button class="btn-primary" onclick="submitOrder()" style="margin: 0; margin-top: 15px;">✅ Finalizar</button>
-            </div>
+            <input type="text" id="clientName" placeholder="Nome do cliente">
+            <div id="categories"></div>
+            <div id="products"></div>
+            <input type="number" id="qty" value="1" min="1">
+            <button onclick="addProduct()">Adicionar</button>
+            <div id="order"></div>
         </div>
     </div>
 
     <div id="caixa" class="tab-content">
         <div class="section">
-            <div id="msg-caixa"></div>
-            <input type="text" id="searchClient" placeholder="🔍 Buscar cliente" onkeyup="searchCommands()">
+            <input type="text" id="searchClient" placeholder="Buscar cliente" onkeyup="searchCommands()">
             <div id="commands"></div>
-            <div class="detail" id="detail"></div>
+            <div id="detail"></div>
         </div>
     </div>
 
     <script>
         const CARDAPIO_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=1205665778&single=true&output=csv';
-        const PEDIDOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=449213224&single=true&output=csv';
-
+        
         let cardapio = [];
-        let pedidos = [];
         let tempOrder = [];
-        let selectedCategory = null;
         let selectedProduct = null;
+        let selectedCategory = null;
 
         function parseCSV(text) {
-            const lines = text.trim().split('\n');
-            return lines.map(line => {
-                const result = [];
-                let current = '';
-                let inQuotes = false;
-                for (let i = 0; i < line.length; i++) {
-                    const char = line[i];
-                    if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        result.push(current.trim());
-                        current = '';
-                    } else {
-                        current += char;
-                    }
-                }
-                result.push(current.trim());
-                return result;
-            });
+            const lines = text.split('\n');
+            return lines.map(line => line.split(','));
         }
 
         async function loadData() {
             try {
-                console.log('Carregando cardápio...');
-                const cardRes = await fetch(CARDAPIO_URL);
-                const cardText = await cardRes.text();
-                console.log('Cardápio bruto:', cardText.substring(0, 200));
-                
-                const allLines = parseCSV(cardText);
-                console.log('Cardápio parseado:', allLines);
-                
-                cardapio = allLines.slice(1).filter(r => r[0] && r[0].trim() && r[3] !== 'FALSE');
-                console.log('Cardápio filtrado:', cardapio);
-
-                const pedRes = await fetch(PEDIDOS_URL);
-                const pedText = await pedRes.text();
-                pedidos = parseCSV(pedText).slice(1);
-
+                const res = await fetch(CARDAPIO_URL);
+                const text = await res.text();
+                cardapio = parseCSV(text).slice(1).filter(r => r[0] && r[0].trim());
+                console.log('Cardápio:', cardapio);
                 renderCategories();
                 renderProducts();
-                showMsg('✅ Sincronizado com sucesso!', 'success');
+                alert('Sincronizado!');
             } catch(e) {
-                console.error('Erro:', e);
-                showMsg('❌ Erro: ' + e.message, 'error');
+                alert('Erro: ' + e.message);
             }
         }
 
         function renderCategories() {
-            const cats = [...new Set(cardapio.map(p => p[1]).filter(c => c && c.trim()))];
+            const cats = [...new Set(cardapio.map(p => p[1]))];
             const div = document.getElementById('categories');
-            div.innerHTML = cats.map(c => `<button onclick="selectCat('${c}', this)">${c}</button>`).join('');
+            div.innerHTML = cats.map(c => '<button class="category-btn" onclick="selectCat(this)">' + c + '</button>').join('');
         }
 
-        function selectCat(cat, btn) {
-            selectedCategory = cat;
-            document.querySelectorAll('#categories button').forEach(b => b.classList.remove('active'));
+        function selectCat(btn) {
+            selectedCategory = btn.textContent;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             renderProducts();
         }
 
         function renderProducts() {
-            let filtered = selectedCategory ? cardapio.filter(p => p[1] === selectedCategory) : cardapio;
+            let filtered = cardapio;
+            if (selectedCategory) {
+                filtered = cardapio.filter(p => p[1] === selectedCategory);
+            }
             const div = document.getElementById('products');
             div.innerHTML = filtered.map(p => {
-                const price = parseFloat(p[2]) || 0;
-                return `
-                    <button onclick="selectProd('${p[0]}', ${price})">
-                        <div>${p[0]}</div>
-                        <div class="product-price">R$ ${price.toFixed(2)}</div>
-                    </button>
-                `;
+                const price = parseFloat(p[2].replace('R$', '').replace(',', '.')) || 0;
+                return '<button class="product-btn" onclick="selectProd(' + price + ', ' + "'" + p[0] + "'" + ')">' + p[0] + ' - R$ ' + price.toFixed(2) + '</button>';
             }).join('');
         }
 
-        function selectProd(name, price) {
-            selectedProduct = { name, price };
+        function selectProd(price, name) {
+            selectedProduct = { price, name };
         }
 
         function addProduct() {
-            const client = document.getElementById('clientName').value.trim();
-            if (!client) { showMsg('❌ Digite o nome do cliente', 'error'); return; }
-            if (!selectedProduct) { showMsg('❌ Selecione um produto', 'error'); return; }
-
-            const qty = parseInt(document.getElementById('qty').value) || 1;
-            tempOrder.push({
-                name: selectedProduct.name,
-                price: selectedProduct.price,
-                qty,
-                sub: selectedProduct.price * qty
-            });
-
-            showOrder(client);
-            document.getElementById('qty').value = '1';
+            const client = document.getElementById('clientName').value;
+            if (!client || !selectedProduct) return alert('Selecione cliente e produto');
+            
+            const qty = parseInt(document.getElementById('qty').value);
+            tempOrder.push({ name: selectedProduct.name, price: selectedProduct.price, qty, sub: selectedProduct.price * qty });
+            showOrder();
         }
 
-        function showOrder(client) {
-            const order = document.getElementById('order');
-            const items = document.getElementById('orderItems');
+        function showOrder() {
+            const div = document.getElementById('order');
+            let html = '<div class="order-item"><strong>Comanda</strong></div>';
             let total = 0;
-            items.innerHTML = tempOrder.map(i => {
+            tempOrder.forEach(i => {
                 total += i.sub;
-                return `<div class="order-item"><div>${i.name} x${i.qty}</div><div>R$ ${i.sub.toFixed(2)}</div></div>`;
-            }).join('');
-            document.getElementById('total').textContent = total.toFixed(2);
-            order.classList.add('show');
+                html += '<div class="order-item">' + i.name + ' x' + i.qty + ' = R$ ' + i.sub.toFixed(2) + '</div>';
+            });
+            html += '<div class="order-total">Total: R$ ' + total.toFixed(2) + '</div>';
+            html += '<button onclick="submitOrder()">Finalizar</button>';
+            div.innerHTML = html;
         }
 
         function submitOrder() {
-            const client = document.getElementById('clientName').value.trim();
-            if (!client || !tempOrder.length) { showMsg('❌ Erro', 'error'); return; }
-            showMsg('✅ Comanda enviada com sucesso!', 'success');
+            alert('Comanda enviada!');
             tempOrder = [];
+            document.getElementById('order').innerHTML = '';
             document.getElementById('clientName').value = '';
-            document.getElementById('order').classList.remove('show');
         }
 
         function searchCommands() {
-            const search = document.getElementById('searchClient').value.toLowerCase();
-            const cmds = {};
-            pedidos.forEach(r => {
-                if (r[6] === 'Aberto' || r[6] === '') {
-                    const c = r[1] || 'Sem nome';
-                    cmds[c] = (cmds[c] || 0) + (parseFloat(r[5]) || 0);
-                }
-            });
-            let filtered = Object.entries(cmds).filter(([n]) => n.toLowerCase().includes(search));
             const div = document.getElementById('commands');
-            div.innerHTML = filtered.length ? filtered.map(([n, t]) => `
-                <div class="command-item" onclick="viewCommand('${n}')">
-                    <div>${n}</div>
-                    <div>R$ ${t.toFixed(2)}</div>
-                </div>
-            `).join('') : '<p>Nenhuma comanda aberta</p>';
-        }
-
-        function viewCommand(client) {
-            const cmds = pedidos.filter(r => r[1] === client && (r[6] === 'Aberto' || r[6] === ''));
-            const det = document.getElementById('detail');
-            let html = `<div><strong>${client}</strong></div>`;
-            let total = 0;
-            cmds.forEach(r => {
-                const sub = (parseFloat(r[3]) || 0) * (parseInt(r[4]) || 1);
-                total += sub;
-                html += `<div class="order-item"><div>${r[2]} x${r[4]}</div><div>R$ ${sub.toFixed(2)}</div></div>`;
-            });
-            html += `<div class="order-total">Total: R$ ${total.toFixed(2)}</div>`;
-            html += `<button class="btn-primary" onclick="finishCmd('${client}')" style="margin: 15px 0 0 0;">✅ Marcar como PAGO</button>`;
-            det.innerHTML = html;
-            det.classList.add('show');
-        }
-
-        function finishCmd(client) {
-            showMsg('✅ Comanda finalizada!', 'success');
-            document.getElementById('detail').classList.remove('show');
-            searchCommands();
+            div.innerHTML = '<p>Sem comandas abertas</p>';
         }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
-            event.target.classList.add('active');
-            if (tab === 'caixa') searchCommands();
-        }
-
-        function showMsg(msg, type) {
-            const div = document.createElement('div');
-            div.className = 'message ' + type;
-            div.textContent = msg;
-            document.body.insertBefore(div, document.body.firstChild);
-            setTimeout(() => div.remove(), 3000);
         }
 
         loadData();
