@@ -97,25 +97,39 @@
         let selectedProduct = null;
 
         function parseCSV(text) {
-            return text.trim().split('\n').map(row => {
-                let cols = [];
-                let curr = '';
+            const lines = text.trim().split('\n');
+            return lines.map(line => {
+                const result = [];
+                let current = '';
                 let inQuotes = false;
-                for (let c of row) {
-                    if (c === '"') inQuotes = !inQuotes;
-                    else if (c === ',' && !inQuotes) { cols.push(curr.trim()); curr = ''; }
-                    else curr += c;
+                for (let i = 0; i < line.length; i++) {
+                    const char = line[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        result.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
                 }
-                cols.push(curr.trim());
-                return cols;
+                result.push(current.trim());
+                return result;
             });
         }
 
         async function loadData() {
             try {
+                console.log('Carregando cardápio...');
                 const cardRes = await fetch(CARDAPIO_URL);
                 const cardText = await cardRes.text();
-                cardapio = parseCSV(cardText).slice(1).filter(r => r[0] && r[3] !== 'FALSE');
+                console.log('Cardápio bruto:', cardText.substring(0, 200));
+                
+                const allLines = parseCSV(cardText);
+                console.log('Cardápio parseado:', allLines);
+                
+                cardapio = allLines.slice(1).filter(r => r[0] && r[0].trim() && r[3] !== 'FALSE');
+                console.log('Cardápio filtrado:', cardapio);
 
                 const pedRes = await fetch(PEDIDOS_URL);
                 const pedText = await pedRes.text();
@@ -123,14 +137,15 @@
 
                 renderCategories();
                 renderProducts();
-                showMsg('✅ Sincronizado!', 'success');
+                showMsg('✅ Sincronizado com sucesso!', 'success');
             } catch(e) {
+                console.error('Erro:', e);
                 showMsg('❌ Erro: ' + e.message, 'error');
             }
         }
 
         function renderCategories() {
-            const cats = [...new Set(cardapio.map(p => p[1]))].filter(c => c);
+            const cats = [...new Set(cardapio.map(p => p[1]).filter(c => c && c.trim()))];
             const div = document.getElementById('categories');
             div.innerHTML = cats.map(c => `<button onclick="selectCat('${c}', this)">${c}</button>`).join('');
         }
@@ -145,22 +160,25 @@
         function renderProducts() {
             let filtered = selectedCategory ? cardapio.filter(p => p[1] === selectedCategory) : cardapio;
             const div = document.getElementById('products');
-            div.innerHTML = filtered.map(p => `
-                <button onclick="selectProd('${p[0]}', ${p[2]})">
-                    <div>${p[0]}</div>
-                    <div class="product-price">R$ ${parseFloat(p[2]).toFixed(2)}</div>
-                </button>
-            `).join('');
+            div.innerHTML = filtered.map(p => {
+                const price = parseFloat(p[2]) || 0;
+                return `
+                    <button onclick="selectProd('${p[0]}', ${price})">
+                        <div>${p[0]}</div>
+                        <div class="product-price">R$ ${price.toFixed(2)}</div>
+                    </button>
+                `;
+            }).join('');
         }
 
         function selectProd(name, price) {
-            selectedProduct = { name, price: parseFloat(price) };
+            selectedProduct = { name, price };
         }
 
         function addProduct() {
             const client = document.getElementById('clientName').value.trim();
-            if (!client) { showMsg('❌ Nome do cliente', 'error'); return; }
-            if (!selectedProduct) { showMsg('❌ Selecione produto', 'error'); return; }
+            if (!client) { showMsg('❌ Digite o nome do cliente', 'error'); return; }
+            if (!selectedProduct) { showMsg('❌ Selecione um produto', 'error'); return; }
 
             const qty = parseInt(document.getElementById('qty').value) || 1;
             tempOrder.push({
@@ -178,7 +196,7 @@
             const order = document.getElementById('order');
             const items = document.getElementById('orderItems');
             let total = 0;
-            items.innerHTML = tempOrder.map((i, idx) => {
+            items.innerHTML = tempOrder.map(i => {
                 total += i.sub;
                 return `<div class="order-item"><div>${i.name} x${i.qty}</div><div>R$ ${i.sub.toFixed(2)}</div></div>`;
             }).join('');
@@ -189,7 +207,7 @@
         function submitOrder() {
             const client = document.getElementById('clientName').value.trim();
             if (!client || !tempOrder.length) { showMsg('❌ Erro', 'error'); return; }
-            showMsg('✅ Comanda enviada!', 'success');
+            showMsg('✅ Comanda enviada com sucesso!', 'success');
             tempOrder = [];
             document.getElementById('clientName').value = '';
             document.getElementById('order').classList.remove('show');
@@ -211,7 +229,7 @@
                     <div>${n}</div>
                     <div>R$ ${t.toFixed(2)}</div>
                 </div>
-            `).join('') : '<p>Nenhuma comanda</p>';
+            `).join('') : '<p>Nenhuma comanda aberta</p>';
         }
 
         function viewCommand(client) {
@@ -225,13 +243,13 @@
                 html += `<div class="order-item"><div>${r[2]} x${r[4]}</div><div>R$ ${sub.toFixed(2)}</div></div>`;
             });
             html += `<div class="order-total">Total: R$ ${total.toFixed(2)}</div>`;
-            html += `<button class="btn-primary" onclick="finishCmd('${client}')" style="margin: 15px 0 0 0;">✅ Pago</button>`;
+            html += `<button class="btn-primary" onclick="finishCmd('${client}')" style="margin: 15px 0 0 0;">✅ Marcar como PAGO</button>`;
             det.innerHTML = html;
             det.classList.add('show');
         }
 
         function finishCmd(client) {
-            showMsg('✅ Finalizado!', 'success');
+            showMsg('✅ Comanda finalizada!', 'success');
             document.getElementById('detail').classList.remove('show');
             searchCommands();
         }
