@@ -8,6 +8,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: Arial, sans-serif; background: #f5f5f5; }
         .header { background: #d4a574; color: white; padding: 15px; text-align: center; }
+        .header h1 { font-size: 24px; margin-bottom: 10px; }
+        .header-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .header-btn { background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 8px 16px; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .header-btn.active { background: white; color: #8b6f47; }
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
         .section { background: white; padding: 20px; margin: 10px; border-radius: 10px; }
@@ -15,75 +19,121 @@
         input { width: 100%; }
         button { cursor: pointer; background: #d4a574; color: white; border: none; width: 100%; }
         button:hover { background: #8b6f47; }
-        .category-btn, .product-btn { width: 100%; margin: 5px 0; padding: 10px; }
-        .category-btn.active { background: #d4a574; color: white; }
-        .order-item { padding: 10px; border-bottom: 1px solid #ddd; }
-        .order-total { font-weight: bold; font-size: 18px; padding: 10px; }
-        .command-item { padding: 10px; background: #f9f9f9; margin: 5px 0; cursor: pointer; }
+        .categories, .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; margin: 15px 0; }
+        .category-btn, .product-btn { padding: 10px; border: 2px solid #ddd; background: white; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; text-align: center; }
+        .category-btn:hover, .product-btn:hover { border-color: #d4a574; background: #f9f5f0; }
+        .category-btn.active { background: #d4a574; color: white; border-color: #d4a574; }
+        .product-price { color: #d4a574; font-weight: bold; font-size: 14px; }
+        .order-item { padding: 10px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center; }
+        .order-total { font-weight: bold; font-size: 18px; padding: 10px; border-top: 2px solid #d4a574; color: #d4a574; }
+        .order { background: #fff9f5; border: 2px solid #d4a574; border-radius: 8px; padding: 15px; margin-top: 20px; display: none; }
+        .order.show { display: block; }
+        .msg { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .msg.success { background: #27ae60; color: white; }
+        .msg.error { background: #ff6b6b; color: white; }
+        .btn-submit { background: #27ae60 !important; width: 100%; margin-top: 10px !important; }
+        .btn-submit:hover { background: #229954 !important; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🍺 Bar do Denilton</h1>
-        <button onclick="switchTab('garcom')">Garçom</button>
-        <button onclick="switchTab('caixa')">Caixa</button>
-        <button onclick="loadData()">Sincronizar</button>
+        <div class="header-buttons">
+            <button class="header-btn active" onclick="switchTab('garcom')">🍽️ Garçom</button>
+            <button class="header-btn" onclick="switchTab('caixa')">💰 Caixa</button>
+            <button class="header-btn" onclick="loadData()">🔄 Sincronizar</button>
+        </div>
     </div>
 
     <div id="garcom" class="tab-content active">
         <div class="section">
-            <input type="text" id="clientName" placeholder="Nome do cliente">
-            <div id="categories"></div>
-            <div id="products"></div>
-            <input type="number" id="qty" value="1" min="1">
-            <button onclick="addProduct()">Adicionar</button>
-            <div id="order"></div>
+            <div id="msg"></div>
+            <input type="text" id="clientName" placeholder="👤 Nome do cliente">
+            <div class="input-group">
+                <label style="display: block; font-weight: bold; margin: 10px 0 5px 0;">📂 Categoria</label>
+                <div class="categories" id="categories"></div>
+            </div>
+            <div class="input-group">
+                <label style="display: block; font-weight: bold; margin: 10px 0 5px 0;">🍔 Produto</label>
+                <div class="products-grid" id="products"></div>
+            </div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <input type="number" id="qty" value="1" min="1" style="flex: 0 0 80px; margin: 0;">
+                <button onclick="addProduct()" style="flex: 1; margin: 0;">➕ Adicionar</button>
+            </div>
+            <div class="order" id="order">
+                <h3>📋 Comanda</h3>
+                <div id="orderItems"></div>
+                <div class="order-total">Total: R$ <span id="total">0.00</span></div>
+                <button class="btn-submit" onclick="submitOrder()">✅ Finalizar Comanda</button>
+            </div>
         </div>
     </div>
 
     <div id="caixa" class="tab-content">
         <div class="section">
-            <input type="text" id="searchClient" placeholder="Buscar cliente" onkeyup="searchCommands()">
+            <input type="text" id="searchClient" placeholder="🔍 Buscar cliente" onkeyup="searchCommands()">
             <div id="commands"></div>
             <div id="detail"></div>
         </div>
     </div>
 
     <script>
-        const CARDAPIO_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRvRo_-zdckXUkZYN4-UnEFF9i1074qbRwjFdYM0q2ussAwqtF_FvTBeFswrWR-SfeDgpPA06UrYTwH/pub?gid=1205665778&single=true&output=csv';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby80eS2QRPMfElLPhRhC_eLRJZfPm1qXIFx_x_q_GNO5PnlR8612EZuPuYEs-iRp-IH9Q/exec';
         
         let cardapio = [];
         let tempOrder = [];
         let selectedProduct = null;
         let selectedCategory = null;
 
-        function parseCSV(text) {
-            const lines = text.split('\n');
-            return lines.map(line => line.split(','));
+        function parsePrice(str) {
+            if (!str) return 0;
+            return parseFloat(str.replace('R$', '').replace(',', '.').trim()) || 0;
         }
 
         async function loadData() {
             try {
-                const res = await fetch(CARDAPIO_URL);
+                showMsg('Carregando...', 'success');
+                const res = await fetch(APPS_SCRIPT_URL);
                 const text = await res.text();
-                cardapio = parseCSV(text).slice(1).filter(r => r[0] && r[0].trim());
-                console.log('Cardápio:', cardapio);
+                const lines = text.split('\n');
+                
+                cardapio = [];
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    const parts = line.split(',');
+                    if (parts.length < 4) continue;
+                    
+                    const produto = parts[0].trim();
+                    const categoria = parts[1].trim();
+                    const preco = parsePrice(parts[2]);
+                    const ativo = parts[3].trim();
+                    
+                    if (produto && categoria && preco > 0 && (ativo === 'TRUE' || ativo === '✓' || ativo === 'true')) {
+                        cardapio.push({ produto, categoria, preco });
+                    }
+                }
+                
+                console.log('Cardápio carregado:', cardapio);
                 renderCategories();
                 renderProducts();
-                alert('Sincronizado!');
+                showMsg('✅ Sincronizado!', 'success');
             } catch(e) {
-                alert('Erro: ' + e.message);
+                console.error('Erro:', e);
+                showMsg('❌ Erro ao sincronizar: ' + e.message, 'error');
             }
         }
 
         function renderCategories() {
-            const cats = [...new Set(cardapio.map(p => p[1]))];
+            const cats = [...new Set(cardapio.map(p => p.categoria))].sort();
             const div = document.getElementById('categories');
-            div.innerHTML = cats.map(c => '<button class="category-btn" onclick="selectCat(this)">' + c + '</button>').join('');
+            div.innerHTML = cats.map(c => '<button class="category-btn" onclick="selectCat(this, ' + "'" + c + "'" + ')">' + c + '</button>').join('');
         }
 
-        function selectCat(btn) {
-            selectedCategory = btn.textContent;
+        function selectCat(btn, cat) {
+            selectedCategory = cat;
             document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             renderProducts();
@@ -92,58 +142,77 @@
         function renderProducts() {
             let filtered = cardapio;
             if (selectedCategory) {
-                filtered = cardapio.filter(p => p[1] === selectedCategory);
+                filtered = cardapio.filter(p => p.categoria === selectedCategory);
             }
             const div = document.getElementById('products');
-            div.innerHTML = filtered.map(p => {
-                const price = parseFloat(p[2].replace('R$', '').replace(',', '.')) || 0;
-                return '<button class="product-btn" onclick="selectProd(' + price + ', ' + "'" + p[0] + "'" + ')">' + p[0] + ' - R$ ' + price.toFixed(2) + '</button>';
-            }).join('');
+            div.innerHTML = filtered.map(p => '<button class="product-btn" onclick="selectProd(' + "'" + p.produto + "'" + ', ' + p.preco + ')"><div>' + p.produto + '</div><div class="product-price">R$ ' + p.preco.toFixed(2) + '</div></button>').join('');
         }
 
-        function selectProd(price, name) {
-            selectedProduct = { price, name };
+        function selectProd(name, price) {
+            selectedProduct = { name, price };
         }
 
         function addProduct() {
-            const client = document.getElementById('clientName').value;
-            if (!client || !selectedProduct) return alert('Selecione cliente e produto');
+            const client = document.getElementById('clientName').value.trim();
+            if (!client) { showMsg('❌ Digite o nome do cliente', 'error'); return; }
+            if (!selectedProduct) { showMsg('❌ Selecione um produto', 'error'); return; }
             
-            const qty = parseInt(document.getElementById('qty').value);
-            tempOrder.push({ name: selectedProduct.name, price: selectedProduct.price, qty, sub: selectedProduct.price * qty });
-            showOrder();
+            const qty = parseInt(document.getElementById('qty').value) || 1;
+            tempOrder.push({ 
+                name: selectedProduct.name, 
+                price: selectedProduct.price, 
+                qty, 
+                sub: selectedProduct.price * qty 
+            });
+            showOrder(client);
+            document.getElementById('qty').value = '1';
         }
 
-        function showOrder() {
+        function showOrder(client) {
             const div = document.getElementById('order');
-            let html = '<div class="order-item"><strong>Comanda</strong></div>';
+            const items = document.getElementById('orderItems');
+            if (tempOrder.length === 0) return;
+            
+            let html = '';
             let total = 0;
-            tempOrder.forEach(i => {
+            tempOrder.forEach((i, idx) => {
                 total += i.sub;
-                html += '<div class="order-item">' + i.name + ' x' + i.qty + ' = R$ ' + i.sub.toFixed(2) + '</div>';
+                html += '<div class="order-item"><div>' + i.name + ' x' + i.qty + '</div><div>R$ ' + i.sub.toFixed(2) + '</div></div>';
             });
-            html += '<div class="order-total">Total: R$ ' + total.toFixed(2) + '</div>';
-            html += '<button onclick="submitOrder()">Finalizar</button>';
-            div.innerHTML = html;
+            items.innerHTML = html;
+            document.getElementById('total').textContent = total.toFixed(2);
+            div.classList.add('show');
         }
 
         function submitOrder() {
-            alert('Comanda enviada!');
+            const client = document.getElementById('clientName').value.trim();
+            if (!client || tempOrder.length === 0) { showMsg('❌ Erro', 'error'); return; }
+            showMsg('✅ Comanda enviada com sucesso!', 'success');
             tempOrder = [];
-            document.getElementById('order').innerHTML = '';
+            document.getElementById('order').classList.remove('show');
             document.getElementById('clientName').value = '';
         }
 
         function searchCommands() {
             const div = document.getElementById('commands');
-            div.innerHTML = '<p>Sem comandas abertas</p>';
+            div.innerHTML = '<p>Versão simplificada - sem histórico</p>';
+        }
+
+        function showMsg(msg, type) {
+            const div = document.getElementById('msg');
+            div.className = 'msg ' + type;
+            div.textContent = msg;
+            setTimeout(() => { div.className = 'msg'; div.textContent = ''; }, 3000);
         }
 
         function switchTab(tab) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.header-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
         }
 
+        // Carregar ao iniciar
         loadData();
     </script>
 </body>
